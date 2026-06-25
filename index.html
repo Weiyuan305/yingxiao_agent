@@ -1,0 +1,469 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>StudyAgent · 留学营销智能体</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <nav class="top-nav">
+        <div class="nav-inner">
+          <a class="brand" href="./index.html">StudyAgent</a>
+          <div class="nav-links" aria-label="主导航">
+            <button class="nav-link active" type="button" data-view="intelligence">情报中心</button>
+            <button class="nav-link" type="button" data-view="creation">内容创作</button>
+            <button class="nav-link" type="button" data-view="publish">发布管理</button>
+            <button class="nav-link" type="button" data-view="sources">数据源</button>
+          </div>
+          <div class="nav-actions">
+            <span class="sync-dot" aria-hidden="true"></span>
+            <span class="operator">运营专员</span>
+          </div>
+        </div>
+      </nav>
+
+      <main class="main">
+        <section class="page-header fade-up">
+          <div>
+            <h1>留学营销智能体</h1>
+            <p>香港 / 英国 / 新加坡 · 小红书图文优先 · 人工审核发布</p>
+          </div>
+          <button class="btn-primary" id="refreshButton" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M20 12a8 8 0 1 1-2.34-5.66" />
+              <path d="M20 4v5h-5" />
+            </svg>
+            刷新情报
+          </button>
+        </section>
+
+        <section class="integration-strip fade-up fade-up-1" aria-label="当前接入状态">
+          <div>
+            <span>当前模式</span>
+            <strong id="dataMode">演示兜底数据</strong>
+          </div>
+          <div>
+            <span>大模型 API</span>
+            <strong id="modelStatus">未配置 Key，规则生成</strong>
+          </div>
+          <div>
+            <span>X.com API</span>
+            <strong id="xStatus">待配置 Bearer Token</strong>
+          </div>
+        </section>
+
+        <section class="workflow-strip fade-up fade-up-1" id="workflowStrip" aria-label="今日内容生产流程">
+          <button class="workflow-step active" type="button" data-workflow-view="intelligence" data-workflow-step="intel">
+            <span>1</span>
+            <strong>采集情报</strong>
+            <small id="workflowIntel">0 条</small>
+          </button>
+          <button class="workflow-step" type="button" data-workflow-view="intelligence" data-workflow-step="select">
+            <span>2</span>
+            <strong>选择今日题</strong>
+            <small id="workflowSelect">0 条</small>
+          </button>
+          <button class="workflow-step" type="button" data-workflow-view="creation" data-workflow-step="draft">
+            <span>3</span>
+            <strong>编辑草稿</strong>
+            <small id="workflowDraft">0 已改</small>
+          </button>
+          <button class="workflow-step" type="button" data-workflow-view="creation" data-workflow-step="verify">
+            <span>4</span>
+            <strong>事实核验</strong>
+            <small id="workflowVerify">0%</small>
+          </button>
+          <button class="workflow-step" type="button" data-workflow-view="publish" data-workflow-step="publish">
+            <span>5</span>
+            <strong>发布复盘</strong>
+            <small id="workflowPublish">0/0</small>
+          </button>
+        </section>
+
+        <section class="app-view active" data-view-panel="intelligence">
+          <section class="toolbar fade-up fade-up-1" aria-label="情报筛选">
+            <div class="segment" role="tablist" aria-label="地区筛选">
+              <button class="chip active" type="button" data-filter="all">全部</button>
+              <button class="chip" type="button" data-filter="HK">香港</button>
+              <button class="chip" type="button" data-filter="UK">英国</button>
+              <button class="chip" type="button" data-filter="SG">新加坡</button>
+            </div>
+            <div class="date-chip">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M8 2v4M16 2v4M4 9h16M6 5h12a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z" />
+              </svg>
+              <span id="dataDate">未采集</span>
+            </div>
+          </section>
+
+          <section class="stats-grid fade-up fade-up-2" aria-label="今日数据概览">
+            <article class="card stat-card">
+              <div>
+                <span class="stat-label">今日情报</span>
+                <strong id="statTotal">0</strong>
+                <small>较昨日 <span class="green">+6</span></small>
+              </div>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M7 3h7l4 4v14H7V3Z" />
+                <path d="M14 3v5h5" />
+              </svg>
+            </article>
+            <article class="card stat-card">
+              <div>
+                <span class="stat-label">香港情报</span>
+                <strong id="statHK">0</strong>
+                <small>院校动态 / 申请信息</small>
+              </div>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 21h16M6 21V8l6-4 6 4v13M10 21v-6h4v6" />
+              </svg>
+            </article>
+            <article class="card stat-card">
+              <div>
+                <span class="stat-label">英国情报</span>
+                <strong id="statUK">0</strong>
+                <small>政策 / 排名 / 签证</small>
+              </div>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 3v18M5 21h14M7 8h10M8 8l-2 6h4L8 8ZM16 8l-2 6h4l-2-6Z" />
+              </svg>
+            </article>
+            <article class="card stat-card">
+              <div>
+                <span class="stat-label">新加坡情报</span>
+                <strong id="statSG">0</strong>
+                <small>准证 / 申请 / 新闻</small>
+              </div>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 3 4 7v10l8 4 8-4V7l-8-4Z" />
+                <path d="M8 9h8M8 13h6" />
+              </svg>
+            </article>
+            <article class="card stat-card">
+              <div>
+                <span class="stat-label">待核验</span>
+                <strong id="statReview">0</strong>
+                <small>事实卡片待确认</small>
+              </div>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 3 3 7v6c0 5 3.8 7.8 9 8 5.2-.2 9-3 9-8V7l-9-4Z" />
+                <path d="M12 8v5M12 17h.01" />
+              </svg>
+            </article>
+          </section>
+
+          <section class="recommendation-layout fade-up fade-up-2" aria-label="每日推荐和备选题库">
+            <article class="card recommendation-card">
+              <div class="panel-header">
+                <div>
+                  <h2>每日推荐</h2>
+                  <p id="dailyRecommendationHint">建议选择 3-5 篇进行今日创作</p>
+                </div>
+                <span class="badge badge-ready" id="dailySelectedCount">0 已选</span>
+              </div>
+              <div class="recommendation-list" id="dailyRecommendationList"></div>
+            </article>
+
+            <article class="card recommendation-card">
+              <div class="panel-header">
+                <div>
+                  <h2>备选题库</h2>
+                  <p>低优先级内容保留做合集或补位</p>
+                </div>
+                <span class="badge" id="backupTopicCount">0 条</span>
+              </div>
+              <div class="backup-list" id="backupTopicList"></div>
+            </article>
+          </section>
+
+          <section class="workspace">
+          <aside class="card inbox-panel fade-up fade-up-3">
+            <div class="panel-header">
+              <div>
+                <h2>今日情报</h2>
+                <p><span id="visibleCount">0</span> 条候选</p>
+              </div>
+              <button class="btn-ghost compact" type="button">筛选</button>
+            </div>
+            <div class="source-health" aria-label="数据源状态">
+              <span id="sourceHealthSchool"><i class="warn"></i>院校源 0/0</span>
+              <span id="sourceHealthOfficial"><i class="warn"></i>官方源 0/0</span>
+              <span id="sourceHealthSocial"><i class="warn"></i>社媒源 0/0</span>
+            </div>
+            <div class="intel-list" id="intelList"></div>
+          </aside>
+
+          <section class="detail-stack">
+            <article class="card detail-card fade-up fade-up-3">
+              <div class="panel-header">
+                <div>
+                  <span class="badge badge-high" id="selectedScore">高价值</span>
+                  <h2 id="selectedTitle">-</h2>
+                  <p id="selectedMeta">-</p>
+                </div>
+                <span class="credibility" id="selectedCredibility">来源可信度 -</span>
+              </div>
+
+              <div class="facts-box">
+                <h3>情报摘要</h3>
+                <p id="selectedSummary">-</p>
+              </div>
+
+              <div class="source-card">
+                <div>
+                  <h3>数据源</h3>
+                  <a id="sourceUrl" href="#" target="_blank" rel="noreferrer">-</a>
+                </div>
+                <span id="mediaStatus">-</span>
+              </div>
+
+              <div class="facts-grid">
+                <div>
+                  <h3>关键影响</h3>
+                  <ul id="impactList"></ul>
+                </div>
+                <div>
+                  <h3>事实核验</h3>
+                  <ul id="checkList"></ul>
+                </div>
+              </div>
+            </article>
+
+            <article class="card draft-card fade-up fade-up-4">
+              <div class="panel-header">
+                <div>
+                  <h2>小红书草稿</h2>
+                  <p>图文笔记 · 手动发布包</p>
+                </div>
+                <span class="badge" id="draftStatus">待核验</span>
+              </div>
+
+              <div class="field-row">
+                <label for="draftTitle">标题</label>
+                <input class="input-field" id="draftTitle" maxlength="28" />
+                <span id="titleCount">0 / 20</span>
+              </div>
+
+              <div class="field-row">
+                <label for="draftBody">正文</label>
+                <textarea class="input-field textarea" id="draftBody" rows="8" maxlength="1000"></textarea>
+                <span id="bodyCount">0 / 1000</span>
+              </div>
+
+              <div class="tag-row" id="tagRow"></div>
+
+              <div class="cover-row">
+                <figure class="cover-card">
+                  <div class="cover-art" id="coverArt" role="img" aria-label="小红书封面预览"></div>
+                </figure>
+                <div class="cover-fields">
+                  <div class="field-row compact-field">
+                    <label for="coverText">封面文案</label>
+                    <input class="input-field" id="coverText" maxlength="24" />
+                    <span id="coverCount">0 / 20</span>
+                  </div>
+                  <p class="cover-source" id="coverSource">模板封面</p>
+                  <div class="cover-style-control" id="coverStyleControl" aria-label="封面风格选择">
+                    <button class="style-chip active" type="button" data-cover-style="source">来源图</button>
+                    <button class="style-chip" type="button" data-cover-style="chart">数据图表</button>
+                    <button class="style-chip" type="button" data-cover-style="contrast">强对比</button>
+                    <button class="style-chip" type="button" data-cover-style="ai">AI 风格</button>
+                  </div>
+                  <p id="publishHint">包含：封面图 ×1、文案 txt、话题标签、核验记录。</p>
+                </div>
+              </div>
+
+              <div class="button-row">
+                <button class="btn-secondary" id="copyButton" type="button">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M8 8h10v12H8V8Z" />
+                    <path d="M6 16H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                  </svg>
+                  复制文案
+                </button>
+                <button class="btn-primary" id="exportButton" type="button">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 3v12" />
+                    <path d="m7 10 5 5 5-5" />
+                    <path d="M5 21h14" />
+                  </svg>
+                  导出发布包
+                </button>
+              </div>
+            </article>
+          </section>
+        </section>
+        </section>
+
+        <section class="app-view" data-view-panel="creation">
+          <div class="view-grid creation-workbench">
+            <article class="card view-card creation-queue-card">
+              <div class="panel-header">
+                <div>
+                  <h2>内容创作</h2>
+                  <p>从已筛选情报生成小红书图文草稿</p>
+                </div>
+                <span class="badge badge-ready" id="creationCountBadge">0 条可创作</span>
+              </div>
+              <div class="creation-list" id="creationList"></div>
+            </article>
+
+            <div class="creation-detail-stack">
+              <article class="card view-card creation-editor-card">
+                <div class="panel-header">
+                  <div>
+                    <h2>当前选题</h2>
+                    <p id="creationMeta">-</p>
+                  </div>
+                  <button class="btn-primary compact" type="button" id="jumpDraftButton">回到情报</button>
+                </div>
+                <div class="creation-score-strip" id="creationScoreStrip"></div>
+                <div class="creation-editor-form">
+                  <div class="field-row">
+                    <label for="creationDraftTitle">标题</label>
+                    <input class="input-field" id="creationDraftTitle" maxlength="28" />
+                    <span id="creationTitleCount">0 / 28</span>
+                  </div>
+                  <div class="field-row">
+                    <label for="creationDraftBody">正文</label>
+                    <textarea class="input-field textarea editor-textarea" id="creationDraftBody" rows="12" maxlength="1000"></textarea>
+                    <span id="creationBodyCount">0 / 1000</span>
+                  </div>
+                  <div class="editor-grid">
+                    <div class="field-row compact-field">
+                      <label for="creationCtaInput">私信引导</label>
+                      <input class="input-field" id="creationCtaInput" maxlength="80" />
+                    </div>
+                    <div class="field-row compact-field">
+                      <label for="creationTagsInput">话题标签</label>
+                      <input class="input-field" id="creationTagsInput" maxlength="160" />
+                    </div>
+                  </div>
+                </div>
+                <div class="creation-cta-panel" id="creationCtaPanel"></div>
+                <div class="button-row creation-actions">
+                  <button class="btn-secondary compact" type="button" id="creationCopyButton">复制文案</button>
+                  <button class="btn-primary compact" type="button" id="creationExportButton">导出发布包</button>
+                </div>
+              </article>
+
+              <article class="card view-card creation-cover-inspector">
+                <div class="panel-header">
+                  <div>
+                    <h2>封面与核验</h2>
+                    <p>素材状态、风险话术和来源检查</p>
+                  </div>
+                </div>
+                <div class="cover-preview-large">
+                  <div class="cover-art" id="creationCover" role="img" aria-label="当前选题封面"></div>
+                </div>
+                <p class="cover-source cover-source-large" id="creationCoverSource">模板封面</p>
+                <div class="field-row compact-field">
+                  <label for="creationCoverText">封面文案</label>
+                  <input class="input-field" id="creationCoverText" maxlength="24" />
+                  <span id="creationCoverCount">0 / 24</span>
+                </div>
+                <div class="cover-style-control cover-style-control-creation" id="creationCoverStyleControl" aria-label="创作页封面风格选择">
+                  <button class="style-chip active" type="button" data-creation-cover-style="source">来源图</button>
+                  <button class="style-chip" type="button" data-creation-cover-style="chart">数据图表</button>
+                  <button class="style-chip" type="button" data-creation-cover-style="contrast">强对比</button>
+                  <button class="style-chip" type="button" data-creation-cover-style="ai">AI 风格</button>
+                </div>
+                <div class="cover-action-row">
+                  <button class="btn-secondary compact" type="button" id="copyCoverAssetButton">复制图片/提示</button>
+                  <button class="btn-ghost compact" type="button" id="exportCoverBriefButton">导出封面 brief</button>
+                </div>
+                <div class="creation-checklist" id="creationChecklist"></div>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section class="app-view" data-view-panel="publish">
+          <article class="card view-card">
+            <div class="panel-header">
+              <div>
+                <h2>发布管理</h2>
+                <p>人工审核后复制到小红书发布 · 记录排期、状态和效果</p>
+              </div>
+              <button class="btn-secondary compact" type="button" data-view-shortcut="creation">回到创作</button>
+            </div>
+            <div class="publish-summary" id="publishSummary"></div>
+            <div class="calendar-list" id="contentCalendar"></div>
+            <div class="publish-table" id="publishTable"></div>
+            <section class="feedback-panel" aria-label="发布效果复盘">
+              <div class="panel-header compact-header">
+                <div>
+                  <h2>效果复盘</h2>
+                  <p>手动填入小红书数据，后续用于反推选题方向</p>
+                </div>
+                <span class="badge" id="feedbackCount">0 条已复盘</span>
+              </div>
+              <div class="feedback-list" id="feedbackList"></div>
+            </section>
+          </article>
+        </section>
+
+        <section class="app-view" data-view-panel="sources">
+          <article class="card view-card">
+            <div class="panel-header">
+              <div>
+                <h2>数据源</h2>
+                <p>当前 MVP 的香港 / 英国 / 新加坡来源配置</p>
+              </div>
+              <button class="btn-primary compact" type="button" id="testSourcesButton">测试连接</button>
+            </div>
+            <div class="api-status-grid">
+              <div>
+                <span>LLM 生成</span>
+                <strong id="llmApiStatus">规则兜底</strong>
+                <small>需要 OPENAI_API_KEY 或其他模型网关</small>
+              </div>
+              <div>
+                <span>X.com 搜索</span>
+                <strong id="xApiStatus">未连接</strong>
+                <small>需要 X_BEARER_TOKEN 调用 recent search</small>
+              </div>
+              <div>
+                <span>数据存储</span>
+                <strong id="storageStatus">演示兜底</strong>
+                <small>真实采集结果保存到 data/intelligence.json</small>
+              </div>
+            </div>
+            <div class="source-toolbar" id="sourceToolbar" aria-label="数据源筛选">
+              <button class="source-filter active" type="button" data-source-filter="all">全部源</button>
+              <button class="source-filter" type="button" data-source-filter="official">官方/专家</button>
+              <button class="source-filter" type="button" data-source-filter="school">院校</button>
+              <button class="source-filter" type="button" data-source-filter="news">新闻发现</button>
+              <button class="source-filter" type="button" data-source-filter="social">社媒/手动</button>
+              <button class="source-filter" type="button" data-source-filter="failed">需处理</button>
+            </div>
+            <div class="source-summary" id="sourceSummary"></div>
+            <div class="sources-grid" id="sourcesGrid"></div>
+            <section class="competitor-panel" aria-label="竞品笔记录入">
+              <div class="panel-header compact-header">
+                <div>
+                  <h2>竞品笔记录入</h2>
+                  <p>先手动保存标题和链接，避免自动抓取触发风控</p>
+                </div>
+                <span class="badge" id="competitorCount">0 条</span>
+              </div>
+              <form class="competitor-form" id="competitorForm">
+                <input class="input-field" id="competitorTitle" maxlength="80" placeholder="竞品笔记标题" />
+                <input class="input-field" id="competitorUrl" maxlength="240" placeholder="小红书链接或账号主页" />
+                <button class="btn-primary compact" type="submit">保存</button>
+              </form>
+              <div class="competitor-list" id="competitorList"></div>
+            </section>
+          </article>
+        </section>
+      </main>
+
+      <div class="toast" id="toast" role="status" aria-live="polite">已复制</div>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
