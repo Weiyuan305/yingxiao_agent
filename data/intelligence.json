@@ -1,8 +1,8 @@
 {
   "meta": {
     "mode": "agent-pipeline",
-    "generatedAt": "2026-06-28T12:52:42.757Z",
-    "collectedAt": "2026-06-28T12:51:18.295Z",
+    "generatedAt": "2026-06-28T13:02:17.957Z",
+    "collectedAt": "2026-06-28T13:01:08.971Z",
     "sourceCount": 48,
     "successfulSourceCount": 45,
     "skippedSourceCount": 1,
@@ -21,8 +21,8 @@
           "id": "ingest",
           "label": "读取并过滤真实数据",
           "status": "ok",
-          "startedAt": "2026-06-28T12:51:18.299Z",
-          "finishedAt": "2026-06-28T12:51:18.299Z",
+          "startedAt": "2026-06-28T13:01:08.975Z",
+          "finishedAt": "2026-06-28T13:01:08.975Z",
           "itemCount": 49,
           "message": "保留 49/51 条达到展示分数的情报"
         },
@@ -30,8 +30,8 @@
           "id": "score",
           "label": "营销价值评分",
           "status": "ok",
-          "startedAt": "2026-06-28T12:51:18.299Z",
-          "finishedAt": "2026-06-28T12:51:18.305Z",
+          "startedAt": "2026-06-28T13:01:08.975Z",
+          "finishedAt": "2026-06-28T13:01:08.981Z",
           "itemCount": 49,
           "message": "按政策影响、热点热度、紧急程度、收藏价值、可信度完成评分"
         },
@@ -39,8 +39,8 @@
           "id": "recommend",
           "label": "规划每日选题",
           "status": "ok",
-          "startedAt": "2026-06-28T12:51:18.305Z",
-          "finishedAt": "2026-06-28T12:51:18.315Z",
+          "startedAt": "2026-06-28T13:01:08.981Z",
+          "finishedAt": "2026-06-28T13:01:08.991Z",
           "itemCount": 12,
           "message": "选择 12 条进入今日创作，20 条进入备选题库"
         },
@@ -48,8 +48,8 @@
           "id": "generate",
           "label": "生成小红书草稿",
           "status": "ok",
-          "startedAt": "2026-06-28T12:51:18.316Z",
-          "finishedAt": "2026-06-28T12:52:42.755Z",
+          "startedAt": "2026-06-28T13:01:08.992Z",
+          "finishedAt": "2026-06-28T13:02:17.955Z",
           "itemCount": 12,
           "message": "模型生成 12 条，规则兜底 0 条"
         },
@@ -57,8 +57,8 @@
           "id": "package",
           "label": "输出前端工作台 payload",
           "status": "ok",
-          "startedAt": "2026-06-28T12:52:42.755Z",
-          "finishedAt": "2026-06-28T12:52:42.757Z",
+          "startedAt": "2026-06-28T13:02:17.955Z",
+          "finishedAt": "2026-06-28T13:02:17.957Z",
           "itemCount": 12,
           "message": "输出 12 条草稿、20 条备选题"
         }
@@ -87,7 +87,7 @@
       "skipped": false,
       "itemCount": 1,
       "message": "ok",
-      "fetchedAt": "2026-06-28T12:49:35.802Z"
+      "fetchedAt": "2026-06-28T12:59:42.068Z"
     },
     {
       "id": "govuk-content-student-visa",
@@ -101,7 +101,7 @@
       "skipped": false,
       "itemCount": 1,
       "message": "ok",
-      "fetchedAt": "2026-06-28T12:49:36.779Z"
+      "fetchedAt": "2026-06-28T12:59:42.397Z"
     },
     {
       "id": "govuk-content-child-study-visa",
@@ -115,7 +115,7 @@
       "skipped": false,
       "itemCount": 1,
       "message": "ok",
-      "fetchedAt": "2026-06-28T12:49:37.168Z"
+      "fetchedAt": "2026-06-28T12:59:42.706Z"
     },
     {
       "id": "govuk-news-international-students",
@@ -129,7 +129,7 @@
       "skipped": false,
       "itemCount": 20,
       "message": "ok",
-      "fetchedAt": "2026-06-28T12:49:37.630Z"
+      "fetchedAt": "2026-06-28T12:59:43.207Z"
     },
     {
       "id": "ukcisa-student-news",
@@ -143,7 +143,7 @@
       "skipped": false,
       "itemCount": 8,
       "message": "ok",
-      "fetchedAt": "2026-06-28T12:49:42.495Z"
+      "fetchedAt": "2026-06-28T12:59:45.680Z"
     },
     {
       "id": "govuk-statistics-hesa-student-enrolments",
@@ -157,7 +157,7 @@
       "skipped": false,
       "itemCount": 1,
       "message": "ok",
-      "fetchedAt": "2026-06-28T12:49:43.289Z"
+      "fetchedAt": "2026-06-28T12:59:46.437Z"
     },
     {
       "id": "data-gov-hesa-student-statistics",
@@ -171,7 +171,7 @@
       "skipped": false,
       "itemCount": 1,
       "message": "ok",
-      "fetchedAt": "2026-06-28T12:49:46.783Z"
+      "fetchedAt": "2026-06-28T12:59:48.842Z"
     },
     {
       "id": "ucas-data-analysis",
@@ -185,7 +185,7 @@
       "skipped": false,
       "itemCount": 1,
       "message": "ok",
-      "fetchedAt": "2026-06-28T12:49:48.140Z"
+      "fetchedAt": "2026-06-28T12:59:49.639Z"
     },
     {
       "id": "ucas-undergraduate-statistics",
@@ -199,7 +199,7 @@
       "skipped": false,
       "itemCount": 1,
       "message": "ok",
-      "fetchedAt": "2026-06-28T12:49:49.082Z"
+      "fetchedAt": "2026-06-28T12:59:50.201Z"
     },
     {
       "id": "ucas-undergraduate-releases",
@@ -213,7 +213,7 @@
       "skipped": false,
       "itemCount": 1,
       "message": "ok",
-      "fetchedAt": "2026-06-28T12:49:49.776Z"
+      "fetchedAt": "2026-06-28T12:59:51.029Z"
     },
     {
       "id": "ucas-news-insights",
@@ -227,7 +227,7 @@
       "skipped": false,
       "itemCount": 1,
       "message": "ok",
-      "fetchedAt": "2026-06-28T12:49:51.648Z"
+      "fetchedAt": "2026-06-28T12:59:52.007Z"
     },
     {
       "id": "manchester-international",
@@ -241,7 +241,7 @@
       "skipped": false,
       "itemCount": 1,
       "message": "ok",
-      "fetchedAt": "2026-06-28T12:49:53.385Z"
+      "fetchedAt": "2026-06-28T12:59:53.238Z"
     },
     {
       "id": "kcl-international",
@@ -255,7 +255,7 @@
       "skipped": false,
       "itemCount": 1,
       "message": "ok",
-      "fetchedAt": "2026-06-28T12:50:02.344Z"
+      "fetchedAt": "2026-06-28T12:59:56.126Z"
     },
     {
       "id": "warwick-international",
@@ -269,7 +269,7 @@
       "skipped": false,
       "itemCount": 1,
       "message": "ok",
-      "fetchedAt": "2026-06-28T12:50:03.167Z"
+      "fetchedAt": "2026-06-28T13:00:00.790Z"
     },
     {
       "id": "edinburgh-international",
@@ -283,7 +283,7 @@
       "skipped": false,
       "itemCount": 1,
       "message": "ok",
-      "fetchedAt": "2026-06-28T12:50:04.470Z"
+      "fetchedAt": "2026-06-28T13:00:01.224Z"
     },
     {
       "id": "bristol-international",
@@ -297,7 +297,7 @@
       "skipped": false,
       "itemCount": 1,
       "message": "ok",
-      "fetchedAt": "2026-06-28T12:50:11.781Z"
+      "fetchedAt": "2026-06-28T13:00:11.023Z"
     },
     {
       "id": "glasgow-international",
@@ -311,7 +311,7 @@
       "skipped": false,
       "itemCount": 1,
       "message": "ok",
-      "fetchedAt": "2026-06-28T12:50:13.624Z"
+      "fetchedAt": "2026-06-28T13:00:11.963Z"
     },
     {
       "id": "leeds-international",
@@ -325,7 +325,7 @@
       "skipped": false,
       "itemCount": 1,
       "message": "ok",
-      "fetchedAt": "2026-06-28T12:50:16.073Z"
+      "fetchedAt": "2026-06-28T13:00:13.508Z"
     },
     {
       "id": "google-news-uk-study-abroad",
@@ -339,7 +339,7 @@
       "skipped": false,
       "itemCount": 0,
       "message": "fetch failed",
-      "fetchedAt": "2026-06-28T12:50:26.568Z"
+      "fetchedAt": "2026-06-28T13:00:24.008Z"
     },
     {
       "id": "google-news-sg-study-abroad",
@@ -353,7 +353,7 @@
       "skipped": false,
       "itemCount": 0,
       "message": "fetch failed",
-      "fetchedAt": "2026-06-28T12:50:37.070Z"
+      "fetchedAt": "2026-06-28T13:00:34.505Z"
     },
     {
       "id": "sg-ica-student-pass",
@@ -367,7 +367,7 @@
       "skipped": false,
       "itemCount": 1,
       "message": "ok",
-      "fetchedAt": "2026-06-28T12:50:37.879Z"
+      "fetchedAt": "2026-06-28T13:00:35.178Z"
     },
     {
       "id": "ntu-international-qualifications",
@@ -381,7 +381,7 @@
       "skipped": false,
       "itemCount": 1,
       "message": "ok",
-      "fetchedAt": "2026-06-28T12:50:38.142Z"
+      "fetchedAt": "2026-06-28T13:00:35.397Z"
     },
     {
       "id": "hk-gic-general-zh",
@@ -395,7 +395,7 @@
       "skipped": false,
       "itemCount": 100,
       "message": "ok",
-      "fetchedAt": "2026-06-28T12:50:40.933Z"
+      "fetchedAt": "2026-06-28T13:00:39.055Z"
     },
     {
       "id": "studyinhk-apply-introduction",
@@ -409,7 +409,7 @@
       "skipped": false,
       "itemCount": 1,
       "message": "ok",
-      "fetchedAt": "2026-06-28T12:50:42.900Z"
+      "fetchedAt": "2026-06-28T13:00:41.188Z"
     },
     {
       "id": "studyinhk-how-to-apply",
@@ -423,7 +423,7 @@
       "skipped": false,
       "itemCount": 1,
       "message": "ok",
-      "fetchedAt": "2026-06-28T12:50:43.988Z"
+      "fetchedAt": "2026-06-28T13:00:42.209Z"
     },
     {
       "id": "studyinhk-admission-requirements",
@@ -437,7 +437,7 @@
       "skipped": false,
       "itemCount": 1,
       "message": "ok",
-      "fetchedAt": "2026-06-28T12:50:45.193Z"
+      "fetchedAt": "2026-06-28T13:00:43.403Z"
     },
     {
       "id": "studyinhk-visas",
@@ -451,7 +451,7 @@
       "skipped": false,
       "itemCount": 1,
       "message": "ok",
-      "fetchedAt": "2026-06-28T12:50:46.111Z"
+      "fetchedAt": "2026-06-28T13:00:44.550Z"
     },
     {
       "id": "studyinhk-scholarships",
@@ -465,7 +465,7 @@
       "skipped": false,
       "itemCount": 1,
       "message": "ok",
-      "fetchedAt": "2026-06-28T12:50:47.366Z"
+      "fetchedAt": "2026-06-28T13:00:45.689Z"
     },
     {
       "id": "govhk-apply-study-visa",
@@ -479,7 +479,7 @@
       "skipped": false,
       "itemCount": 1,
       "message": "ok",
-      "fetchedAt": "2026-06-28T12:50:49.404Z"
+      "fetchedAt": "2026-06-28T13:00:49.240Z"
     },
     {
       "id": "hk-edb-press-release",
@@ -493,7 +493,7 @@
       "skipped": false,
       "itemCount": 5,
       "message": "ok",
-      "fetchedAt": "2026-06-28T12:50:52.142Z"
+      "fetchedAt": "2026-06-28T13:00:50.257Z"
     },
     {
       "id": "hk-immigration",
@@ -507,7 +507,7 @@
       "skipped": false,
       "itemCount": 1,
       "message": "ok",
-      "fetchedAt": "2026-06-28T12:50:53.461Z"
+      "fetchedAt": "2026-06-28T13:00:50.968Z"
     },
     {
       "id": "hk-immd-study-visa",
@@ -521,7 +521,7 @@
       "skipped": false,
       "itemCount": 1,
       "message": "ok",
-      "fetchedAt": "2026-06-28T12:50:55.575Z"
+      "fetchedAt": "2026-06-28T13:00:51.923Z"
     },
     {
       "id": "hku-press",
@@ -535,7 +535,7 @@
       "skipped": false,
       "itemCount": 1,
       "message": "ok",
-      "fetchedAt": "2026-06-28T12:50:56.029Z"
+      "fetchedAt": "2026-06-28T13:00:52.480Z"
     },
     {
       "id": "ugc-non-local-benefits",
@@ -549,7 +549,7 @@
       "skipped": false,
       "itemCount": 1,
       "message": "ok",
-      "fetchedAt": "2026-06-28T12:50:57.171Z"
+      "fetchedAt": "2026-06-28T13:00:53.194Z"
     },
     {
       "id": "ugc-non-local-student-ceiling",
@@ -563,7 +563,7 @@
       "skipped": false,
       "itemCount": 1,
       "message": "ok",
-      "fetchedAt": "2026-06-28T12:50:57.630Z"
+      "fetchedAt": "2026-06-28T13:00:53.525Z"
     },
     {
       "id": "ugc-rpg-places-2025-2028",
@@ -577,7 +577,7 @@
       "skipped": false,
       "itemCount": 1,
       "message": "ok",
-      "fetchedAt": "2026-06-28T12:50:57.971Z"
+      "fetchedAt": "2026-06-28T13:00:53.845Z"
     },
     {
       "id": "ugc-future-talents-scholarship",
@@ -591,7 +591,7 @@
       "skipped": false,
       "itemCount": 1,
       "message": "ok",
-      "fetchedAt": "2026-06-28T12:50:58.452Z"
+      "fetchedAt": "2026-06-28T13:00:53.984Z"
     },
     {
       "id": "rgc-hong-kong-phd-fellowship",
@@ -605,7 +605,7 @@
       "skipped": false,
       "itemCount": 1,
       "message": "ok",
-      "fetchedAt": "2026-06-28T12:50:59.227Z"
+      "fetchedAt": "2026-06-28T13:00:55.046Z"
     },
     {
       "id": "hkust-pg-programs",
@@ -619,7 +619,7 @@
       "skipped": false,
       "itemCount": 1,
       "message": "ok",
-      "fetchedAt": "2026-06-28T12:51:00.691Z"
+      "fetchedAt": "2026-06-28T13:00:55.888Z"
     },
     {
       "id": "hku-international-qualifications",
@@ -633,7 +633,7 @@
       "skipped": false,
       "itemCount": 1,
       "message": "ok",
-      "fetchedAt": "2026-06-28T12:51:06.533Z"
+      "fetchedAt": "2026-06-28T13:00:56.707Z"
     },
     {
       "id": "cuhk-graduate-admissions",
@@ -647,7 +647,7 @@
       "skipped": false,
       "itemCount": 1,
       "message": "ok",
-      "fetchedAt": "2026-06-28T12:51:06.964Z"
+      "fetchedAt": "2026-06-28T13:00:57.077Z"
     },
     {
       "id": "polyu-taught-postgraduate",
@@ -661,7 +661,7 @@
       "skipped": false,
       "itemCount": 1,
       "message": "ok",
-      "fetchedAt": "2026-06-28T12:51:07.403Z"
+      "fetchedAt": "2026-06-28T13:00:59.673Z"
     },
     {
       "id": "hkbu-international-qualifications",
@@ -675,7 +675,7 @@
       "skipped": false,
       "itemCount": 1,
       "message": "ok",
-      "fetchedAt": "2026-06-28T12:51:08.443Z"
+      "fetchedAt": "2026-06-28T13:01:01.019Z"
     },
     {
       "id": "eduhk-nonlocal-procedures",
@@ -689,7 +689,7 @@
       "skipped": false,
       "itemCount": 1,
       "message": "ok",
-      "fetchedAt": "2026-06-28T12:51:10.744Z"
+      "fetchedAt": "2026-06-28T13:01:03.012Z"
     },
     {
       "id": "hkmu-nonlocal-undergraduate",
@@ -703,7 +703,7 @@
       "skipped": false,
       "itemCount": 1,
       "message": "ok",
-      "fetchedAt": "2026-06-28T12:51:16.463Z"
+      "fetchedAt": "2026-06-28T13:01:07.160Z"
     },
     {
       "id": "lingnan-international-qualifications",
@@ -717,7 +717,7 @@
       "skipped": false,
       "itemCount": 1,
       "message": "ok",
-      "fetchedAt": "2026-06-28T12:51:18.291Z"
+      "fetchedAt": "2026-06-28T13:01:08.968Z"
     },
     {
       "id": "manual-social-inbox",
@@ -731,7 +731,7 @@
       "skipped": false,
       "itemCount": 0,
       "message": "ok",
-      "fetchedAt": "2026-06-28T12:51:18.294Z"
+      "fetchedAt": "2026-06-28T13:01:08.970Z"
     },
     {
       "id": "x-uk-graduate-visa",
@@ -745,7 +745,7 @@
       "skipped": true,
       "itemCount": 0,
       "message": "missing X_BEARER_TOKEN",
-      "fetchedAt": "2026-06-28T12:51:18.294Z"
+      "fetchedAt": "2026-06-28T13:01:08.971Z"
     }
   ],
   "backupItems": [
@@ -758,9 +758,9 @@
       "sourceUrl": "https://www.ucas.com/data-and-analysis",
       "sourceType": "申请数据",
       "sourceTrustLevel": "official",
-      "publishedAt": "2026-06-28T12:49:48.137Z",
-      "fetchedAt": "2026-06-28T12:49:48.137Z",
-      "time": "20:49",
+      "publishedAt": "2026-06-28T12:59:49.638Z",
+      "fetchedAt": "2026-06-28T12:59:49.638Z",
+      "time": "20:59",
       "score": 93,
       "marketingScore": {
         "total": 90,
@@ -802,9 +802,9 @@
       "sourceUrl": "https://www.bristol.ac.uk/international/",
       "sourceType": "申请信息",
       "sourceTrustLevel": "school",
-      "publishedAt": "2026-06-28T12:50:11.780Z",
-      "fetchedAt": "2026-06-28T12:50:11.780Z",
-      "time": "20:50",
+      "publishedAt": "2026-06-28T13:00:11.022Z",
+      "fetchedAt": "2026-06-28T13:00:11.022Z",
+      "time": "21:00",
       "score": 100,
       "marketingScore": {
         "total": 89,
@@ -845,9 +845,9 @@
       "sourceUrl": "https://warwick.ac.uk/study/international/",
       "sourceType": "申请信息",
       "sourceTrustLevel": "school",
-      "publishedAt": "2026-06-28T12:50:03.164Z",
-      "fetchedAt": "2026-06-28T12:50:03.164Z",
-      "time": "20:50",
+      "publishedAt": "2026-06-28T13:00:00.789Z",
+      "fetchedAt": "2026-06-28T13:00:00.789Z",
+      "time": "21:00",
       "score": 100,
       "marketingScore": {
         "total": 87,
@@ -889,7 +889,7 @@
       "sourceType": "申请信息",
       "sourceTrustLevel": "school",
       "publishedAt": "2025-11-28T06:14:51.000Z",
-      "fetchedAt": "2026-06-28T12:51:16.462Z",
+      "fetchedAt": "2026-06-28T13:01:07.159Z",
       "time": "14:14",
       "score": 100,
       "marketingScore": {
@@ -931,9 +931,9 @@
       "sourceUrl": "https://www.ucas.com/data-and-analysis/undergraduate-statistics-and-reports",
       "sourceType": "申请数据",
       "sourceTrustLevel": "official",
-      "publishedAt": "2026-06-28T12:49:49.081Z",
-      "fetchedAt": "2026-06-28T12:49:49.081Z",
-      "time": "20:49",
+      "publishedAt": "2026-06-28T12:59:50.200Z",
+      "fetchedAt": "2026-06-28T12:59:50.200Z",
+      "time": "20:59",
       "score": 95,
       "marketingScore": {
         "total": 85,
@@ -975,9 +975,9 @@
       "sourceUrl": "https://www.manchester.ac.uk/study/international/",
       "sourceType": "申请信息",
       "sourceTrustLevel": "school",
-      "publishedAt": "2026-06-28T12:49:53.384Z",
-      "fetchedAt": "2026-06-28T12:49:53.384Z",
-      "time": "20:49",
+      "publishedAt": "2026-06-28T12:59:53.237Z",
+      "fetchedAt": "2026-06-28T12:59:53.237Z",
+      "time": "20:59",
       "score": 80,
       "marketingScore": {
         "total": 78,
@@ -1018,9 +1018,9 @@
       "sourceUrl": "https://www.gov.uk/government/statistics/higher-education-student-enrolments-uk-2024-to-2025",
       "sourceType": "统计数据",
       "sourceTrustLevel": "official",
-      "publishedAt": "2026-06-28T12:49:43.285Z",
-      "fetchedAt": "2026-06-28T12:49:43.285Z",
-      "time": "20:49",
+      "publishedAt": "2026-06-28T12:59:46.436Z",
+      "fetchedAt": "2026-06-28T12:59:46.436Z",
+      "time": "20:59",
       "score": 51,
       "marketingScore": {
         "total": 78,
@@ -1060,9 +1060,9 @@
       "sourceUrl": "https://www.leeds.ac.uk/international-students",
       "sourceType": "申请信息",
       "sourceTrustLevel": "school",
-      "publishedAt": "2026-06-28T12:50:16.072Z",
-      "fetchedAt": "2026-06-28T12:50:16.072Z",
-      "time": "20:50",
+      "publishedAt": "2026-06-28T13:00:13.507Z",
+      "fetchedAt": "2026-06-28T13:00:13.507Z",
+      "time": "21:00",
       "score": 90,
       "marketingScore": {
         "total": 83,
@@ -1103,9 +1103,9 @@
       "sourceUrl": "https://admissions.hkbu.edu.hk/admissions/international-qualifications.html",
       "sourceType": "申请信息",
       "sourceTrustLevel": "school",
-      "publishedAt": "2026-06-28T12:51:08.441Z",
-      "fetchedAt": "2026-06-28T12:51:08.441Z",
-      "time": "20:51",
+      "publishedAt": "2026-06-28T13:01:01.019Z",
+      "fetchedAt": "2026-06-28T13:01:01.019Z",
+      "time": "21:01",
       "score": 76,
       "marketingScore": {
         "total": 77,
@@ -1146,7 +1146,7 @@
       "sourceType": "签证政策",
       "sourceTrustLevel": "official",
       "publishedAt": "2025-01-16T16:01:05.000Z",
-      "fetchedAt": "2026-06-28T12:50:49.403Z",
+      "fetchedAt": "2026-06-28T13:00:49.239Z",
       "time": "00:01",
       "score": 67,
       "marketingScore": {
@@ -1188,9 +1188,9 @@
       "sourceUrl": "https://www.ntu.edu.sg/admissions/undergraduate/admission-guide/international-qualifications",
       "sourceType": "申请信息",
       "sourceTrustLevel": "school",
-      "publishedAt": "2026-06-28T12:50:38.142Z",
-      "fetchedAt": "2026-06-28T12:50:38.142Z",
-      "time": "20:50",
+      "publishedAt": "2026-06-28T13:00:35.396Z",
+      "fetchedAt": "2026-06-28T13:00:35.396Z",
+      "time": "21:00",
       "score": 100,
       "marketingScore": {
         "total": 75,
@@ -1230,9 +1230,9 @@
       "sourceUrl": "https://www.gla.ac.uk/international/study/",
       "sourceType": "申请信息",
       "sourceTrustLevel": "school",
-      "publishedAt": "2026-06-28T12:50:13.623Z",
-      "fetchedAt": "2026-06-28T12:50:13.623Z",
-      "time": "20:50",
+      "publishedAt": "2026-06-28T13:00:11.962Z",
+      "fetchedAt": "2026-06-28T13:00:11.962Z",
+      "time": "21:00",
       "score": 96,
       "marketingScore": {
         "total": 77,
@@ -1272,9 +1272,9 @@
       "sourceUrl": "https://cerg1.ugc.edu.hk/hkpfs/Explanatory/Explanatory_Init_App.jsp",
       "sourceType": "奖学金",
       "sourceTrustLevel": "official",
-      "publishedAt": "2026-06-28T12:50:59.225Z",
-      "fetchedAt": "2026-06-28T12:50:59.225Z",
-      "time": "20:50",
+      "publishedAt": "2026-06-28T13:00:55.044Z",
+      "fetchedAt": "2026-06-28T13:00:55.044Z",
+      "time": "21:00",
       "score": 83,
       "marketingScore": {
         "total": 77,
@@ -1317,7 +1317,7 @@
       "sourceType": "政策数据",
       "sourceTrustLevel": "official",
       "publishedAt": "2024-10-31T17:01:07.000Z",
-      "fetchedAt": "2026-06-28T12:49:35.800Z",
+      "fetchedAt": "2026-06-28T12:59:42.067Z",
       "time": "01:01",
       "score": 100,
       "marketingScore": {
@@ -1357,9 +1357,9 @@
       "sourceUrl": "https://www.apply.eduhk.hk/ug/nonlocal_procedures",
       "sourceType": "申请信息",
       "sourceTrustLevel": "school",
-      "publishedAt": "2026-06-28T12:51:10.743Z",
-      "fetchedAt": "2026-06-28T12:51:10.743Z",
-      "time": "20:51",
+      "publishedAt": "2026-06-28T13:01:03.011Z",
+      "fetchedAt": "2026-06-28T13:01:03.011Z",
+      "time": "21:01",
       "score": 84,
       "marketingScore": {
         "total": 69,
@@ -1399,9 +1399,9 @@
       "sourceUrl": "https://prog-crs.hkust.edu.hk/pgprog/",
       "sourceType": "申请信息",
       "sourceTrustLevel": "school",
-      "publishedAt": "2026-06-28T12:51:00.689Z",
-      "fetchedAt": "2026-06-28T12:51:00.689Z",
-      "time": "20:51",
+      "publishedAt": "2026-06-28T13:00:55.887Z",
+      "fetchedAt": "2026-06-28T13:00:55.887Z",
+      "time": "21:00",
       "score": 60,
       "marketingScore": {
         "total": 68,
@@ -1442,7 +1442,7 @@
       "sourceType": "政策数据",
       "sourceTrustLevel": "official",
       "publishedAt": "2024-10-31T17:01:03.000Z",
-      "fetchedAt": "2026-06-28T12:49:37.164Z",
+      "fetchedAt": "2026-06-28T12:59:42.706Z",
       "time": "01:01",
       "score": 77,
       "marketingScore": {
@@ -1482,9 +1482,9 @@
       "sourceUrl": "https://www.immd.gov.hk/",
       "sourceType": "签证政策",
       "sourceTrustLevel": "official",
-      "publishedAt": "2026-06-28T12:50:53.460Z",
-      "fetchedAt": "2026-06-28T12:50:53.460Z",
-      "time": "20:50",
+      "publishedAt": "2026-06-28T13:00:50.966Z",
+      "fetchedAt": "2026-06-28T13:00:50.966Z",
+      "time": "21:00",
       "score": 57,
       "marketingScore": {
         "total": 70,
@@ -1524,7 +1524,7 @@
       "sourceType": "政策数据",
       "sourceTrustLevel": "official",
       "publishedAt": "2024-10-31T17:00:02.000Z",
-      "fetchedAt": "2026-06-28T12:49:36.775Z",
+      "fetchedAt": "2026-06-28T12:59:42.396Z",
       "time": "01:00",
       "score": 77,
       "marketingScore": {
@@ -1564,9 +1564,9 @@
       "sourceUrl": "https://www.ukcisa.org.uk/student-advice/visas-and-immigration/evisas/",
       "sourceType": "政策解读",
       "sourceTrustLevel": "expert",
-      "publishedAt": "2026-06-28T12:49:42.494Z",
-      "fetchedAt": "2026-06-28T12:49:42.494Z",
-      "time": "20:49",
+      "publishedAt": "2026-06-28T12:59:45.679Z",
+      "fetchedAt": "2026-06-28T12:59:45.679Z",
+      "time": "20:59",
       "score": 56,
       "marketingScore": {
         "total": 69,
@@ -1614,9 +1614,9 @@
       "imageLicenseStatus": "official-page",
       "canPublishImage": true,
       "coverTheme": "linear-gradient(135deg, #020617 0%, #1e3a8a 52%, #16a34a 100%)",
-      "time": "20:50",
-      "publishedAt": "2026-06-28T12:50:04.467Z",
-      "fetchedAt": "2026-06-28T12:50:04.467Z",
+      "time": "21:00",
+      "publishedAt": "2026-06-28T13:00:01.224Z",
+      "fetchedAt": "2026-06-28T13:00:01.224Z",
       "score": 100,
       "marketingScore": {
         "total": 86,
@@ -1653,16 +1653,16 @@
       ],
       "credibility": 4.5,
       "status": "待核验",
-      "summary": "基于爱丁堡大学国际申请者页面整理，内容聚焦国际学生可查询的申请、费用资助、签证移民、语言要求与申请支持信息，不作录取、签证或就业承诺。",
+      "summary": "爱丁堡大学国际申请人页面提供面向国际学生的申请信息入口，涵盖课程选择、UCAS申请、学术与英语要求、签证移民要求、申请支持、费用与资金等内容。信息来自学校官网，适合作为申请前期核对清单参考。",
       "impact": [
-        "国际申请者可通过学校页面了解本科、研究生、预科、暑校、在线学习等不同学习路径。",
-        "页面提示申请前需关注学术入学要求、英语语言要求、费用与资金安排等关键信息。",
-        "学校提供申请支持、活动访问及本地联系信息，但具体结果仍取决于个人背景、课程要求和官方审核。"
+        "国际申请人可通过该页面集中查看本科、研究生、预科、暑校、线上学习等学习选项。",
+        "页面提示申请者关注学术入学要求、英语语言要求、签证与移民要求等关键环节。",
+        "费用、资金支持、活动访问和申请支持信息可帮助申请者更早规划材料与预算。"
       ],
       "checks": [
-        "信息来源为爱丁堡大学官方国际申请者页面，可信度较高。",
-        "原文仅说明提供招生、费用资助、签证移民等支持信息，未承诺录取或签证结果。",
-        "建议申请前以具体课程页面、UCAS或学校最新官方说明为准。"
+        "该来源为爱丁堡大学官网国际申请人页面，可信度较高，但具体专业要求仍需以对应课程页面为准。",
+        "页面仅提供申请信息与支持入口，不代表录取、签证或奖学金结果。",
+        "申请政策、费用和签证要求可能更新，递交前应再次核对官网最新说明。"
       ],
       "tags": [
         "爱丁堡大学",
@@ -1671,9 +1671,9 @@
         "本科申请",
         "研究生申请"
       ],
-      "draftTitle": "爱丁堡国际申请看什么",
-      "draftBody": "想申请爱丁堡大学的国际同学，可以先从学校官方 International applicants 页面入手做信息核对。\n\n页面主要覆盖这些方向：\n✅ 学习选择：本科、研究生、Study abroad、国际预科、暑校、在线学习等\n✅ 申请相关：UCAS申请、学术入学要求、英语语言要求、支持材料\n✅ 费用与资金：学费、资助和生活成本相关信息\n✅ 签证与移民：学校提供相关要求入口，但最终需以官方签证规则和个人情况为准\n✅ 申请支持：活动访问、申请支持、本地联系人及代理相关说明\n\n比较适合作为前期选校和准备清单使用：先确认目标课程，再逐项核对入学要求、语言要求、费用预算和申请材料。\n\n提醒：官方页面提供的是信息与支持，并不代表录取、签证或奖学金结果。申请前建议回到具体课程页面和学校最新说明再次确认。",
-      "coverText": "爱丁堡申请"
+      "draftTitle": "爱丁堡国际生申请看什么",
+      "draftBody": "想申请爱丁堡大学的同学，可以先把官网的 International applicants 页面当作“总入口”来看。\n\n官网目前把国际申请人常用信息集中在几个方向：\n\n✅ 学习选项：本科、研究生、Study abroad、国际预科、暑校、线上学习等\n✅ 申请流程：包括 UCAS 申请相关信息\n✅ 入学要求：学术要求、英语语言要求\n✅ 签证相关：签证与移民要求入口\n✅ 申请支持：活动访问、申请支持、费用、资金与生活成本信息\n\n比较建议大家这样用：\n1️⃣ 先确认自己申请的是本科还是研究生\n2️⃣ 再进入具体课程页面看专业要求\n3️⃣ 同步核对英语要求、申请材料和截止时间\n4️⃣ 预算部分不要只看学费，也要关注生活成本和资金安排\n\n提醒：官网页面是信息入口，不等于录取保证。不同专业的要求可能不同，签证、费用和申请政策也可能更新，递交前一定以爱丁堡大学官网和相关官方渠道最新信息为准。",
+      "coverText": "爱大申请入口"
     },
     {
       "id": "f5f5dc1058825cb5",
@@ -1691,9 +1691,9 @@
       "imageLicenseStatus": "no-image",
       "canPublishImage": false,
       "coverTheme": "linear-gradient(135deg, #111827 0%, #b91c1c 46%, #f59e0b 100%)",
-      "time": "20:50",
-      "publishedAt": "2026-06-28T12:50:37.878Z",
-      "fetchedAt": "2026-06-28T12:50:37.878Z",
+      "time": "21:00",
+      "publishedAt": "2026-06-28T13:00:35.176Z",
+      "fetchedAt": "2026-06-28T13:00:35.176Z",
       "score": 100,
       "marketingScore": {
         "total": 89,
@@ -1732,27 +1732,27 @@
       ],
       "credibility": 4.8,
       "status": "待核验",
-      "summary": "基于新加坡移民与关卡局（ICA）官方学生准证页面整理，适合用于提醒计划赴新加坡全日制学习的学生关注 Student's Pass 基本要求与例外情形。",
+      "summary": "基于新加坡 ICA 官方 Student's Pass 页面：已被新加坡教育机构录取并赴新全日制学习的外籍学生，通常需要申请 Student's Pass，除非已持有符合条件的相关准证或豁免身份。",
       "impact": [
-        "已被新加坡教育机构录取并计划进行全日制学习的外国学生，通常需要申请 Student's Pass。",
-        "若学生已持有有效 Dependant's Pass、Long-Term Visit Pass 或 Immigration Exemption 等身份，可能不适用一般 Student's Pass 要求，需以 ICA 官方说明为准。",
-        "Student's Pass 属于入境与居留合规事项，录取、准证审批和入境结果均需分别由学校及主管机构审核。"
+        "适用于计划赴新加坡进行全日制学习的国际学生，重点关注入境与居留合规。",
+        "Student's Pass 申请通常以已被教育机构接受为前提，不等同于学校录取保证。",
+        "不同身份如 Dependant's Pass、Long-Term Visit Pass 或移民豁免等，可能影响是否需要申请，需以 ICA 官方判断为准。"
       ],
       "checks": [
-        "信息来源为 ICA 官方页面，可信度较高，但申请细节可能更新，递交前应再次核对官网。",
-        "内容仅说明一般政策方向，不构成签证建议，也不保证准证获批。",
-        "营销表达需避免使用“稳过”“保证入境”“拿到录取就一定获批”等绝对化表述。"
+        "信息来源为新加坡 ICA 官方 Student's Pass 页面，属于签证政策类官方来源。",
+        "原文仅说明一般申请要求，未提供录取率、获签率或就业结果，内容不应延伸承诺。",
+        "申请前应核对 ICA 官网最新要求、学校通知及个人准证状态。"
       ],
       "tags": [
         "新加坡留学",
         "StudentPass",
-        "学生准证",
-        "ICA",
-        "留学申请"
+        "ICA官方信息",
+        "留学签证",
+        "新加坡学生准证"
       ],
       "draftTitle": "新加坡学生准证别忽略",
-      "draftBody": "准备去新加坡读全日制课程的同学，Student's Pass 一定要提前了解📌\n\n根据新加坡 ICA 官方说明：外国学生如果已被教育机构录取，并将在新加坡进行全日制学习，通常需要申请 Student's Pass。\n\n但也有一些例外情况，例如已持有有效 Dependant's Pass、Long-Term Visit Pass 或符合移民豁免身份的人士，是否需要申请要以 ICA 官网最新要求为准。\n\n这里要特别提醒：\n✅ 学校录取 ≠ 学生准证一定获批\n✅ Student's Pass 审批由主管机构按规定审核\n✅ 不同身份、课程和个人情况可能影响申请流程\n\n建议大家在确认 offer 后，尽早查看学校指引和 ICA 官方页面，按要求准备材料、留足时间，不要等到临近开学才处理。\n\n本内容仅作政策信息整理，不承诺录取、签证或入境结果。",
-      "coverText": "学生准证提醒"
+      "draftBody": "准备去新加坡读全日制课程的同学，Student's Pass 一定要提前了解。\n\n根据新加坡 ICA 官方页面说明：外籍人士如果已被新加坡教育机构接受，并计划在新加坡进行全日制学习，通常需要申请 Student's Pass。\n\n但也有例外情况。比如已持有有效 Dependant's Pass、Long-Term Visit Pass，或属于移民豁免等情况，是否仍需申请要以 ICA 官方要求为准。\n\n这里要特别提醒：\n1️⃣ Student's Pass 不是学校录取保证\n2️⃣ 是否获批取决于官方审核\n3️⃣ 不同学生身份和准证状态可能不同\n4️⃣ 申请前建议同时查看 ICA 官网和学校邮件通知\n\n如果你正在规划新加坡留学，可以把“录取—准证—入境安排”分开准备，别等到出发前才检查准证要求。政策细节可能更新，最终以 ICA 官方页面为准。",
+      "coverText": "学生准证"
     },
     {
       "id": "f64f4cf4d9e91d25",
@@ -1770,9 +1770,9 @@
       "imageLicenseStatus": "no-image",
       "canPublishImage": false,
       "coverTheme": "linear-gradient(135deg, #0f172a 0%, #1d4ed8 52%, #f59e0b 100%)",
-      "time": "20:50",
-      "publishedAt": "2026-06-28T12:50:43.987Z",
-      "fetchedAt": "2026-06-28T12:50:43.987Z",
+      "time": "21:00",
+      "publishedAt": "2026-06-28T13:00:42.208Z",
+      "fetchedAt": "2026-06-28T13:00:42.208Z",
       "score": 100,
       "marketingScore": {
         "total": 87,
@@ -1811,27 +1811,27 @@
       ],
       "credibility": 4.8,
       "status": "待核验",
-      "summary": "基于香港官方 Study in Hong Kong「How to Apply」页面整理，内容适合用于介绍香港升学申请的基础流程与信息查找方式。",
+      "summary": "基于香港官方 Study in Hong Kong「How to Apply」页面信息，整理面向有意赴港升学学生的申请路径提醒，重点提示应以院校官方要求、签证规定及费用信息为准。",
       "impact": [
-        "可作为香港留学申请入门科普，帮助学生先了解官方信息入口。",
-        "适合提醒申请人关注院校、课程、签证、学费生活费等官方栏目。",
-        "不涉及录取率、签证通过率或就业结果承诺，营销风险较低。"
+        "适合用于赴港留学申请前期科普，帮助学生建立“先查项目与院校要求”的基本认知。",
+        "内容不涉及录取率、签证通过率或就业结果承诺，风险较低。",
+        "可引导用户进一步查看官方项目列表、入学要求、签证、学费生活费及奖学金等栏目。"
       ],
       "checks": [
-        "来源为官方指南页面，但原文节选有限，具体申请要求仍需以目标院校及相关政府部门最新说明为准。",
-        "避免使用“保证录取”“快速拿签”“毕业即就业”等绝对化表述。",
-        "发布时间为系统抓取时间，发布前建议再次打开原链接核对页面内容是否更新。"
+        "来源为 Study in Hong Kong 官方指南页面，可信度较高，但具体要求仍需以各院校和香港入境事务处最新公布为准。",
+        "原文仅显示页面导航与申请相关栏目，未提供具体申请截止日期、材料清单或费用数字，因此草稿避免编造细节。",
+        "文案未承诺录取、签证、奖学金、实习或就业结果。"
       ],
       "tags": [
         "香港留学",
-        "香港升学",
+        "港校申请",
         "留学申请",
-        "官方指南",
-        "申请准备"
+        "官方信息",
+        "升学规划"
       ],
-      "draftTitle": "香港留学申请先看这份官方指南",
-      "draftBody": "想申请香港升学，不建议一开始只看零散经验帖。\n\n香港官方 Study in Hong Kong 网站设有「Apply to Study」板块，其中包含 How to Apply、Visas、Admission Requirement 等信息入口，适合用来做申请前的基础功课。\n\n申请前可以先按这个思路整理：\n1️⃣ 确认目标院校和课程\n不同学校、不同项目的申请时间、材料和语言要求可能不同，务必回到院校官网核对。\n\n2️⃣ 查看入学要求\n官方页面提供 Admission Requirement 入口，但具体标准通常仍以院校和项目页面为准。\n\n3️⃣ 关注签证信息\n赴港学习通常需要了解学生签证/入境安排，建议以官方签证说明为准，不要轻信“包签”“稳过”。\n\n4️⃣ 估算费用和生活安排\n官网也有学费、生活费、住宿、到港支持等相关栏目，可作为预算参考。\n\n小提醒：香港申请适合提前规划，但录取结果会受背景、材料、项目竞争等多因素影响，任何机构都不应承诺录取或签证结果。",
-      "coverText": "港申先看"
+      "draftTitle": "香港留学申请先看什么",
+      "draftBody": "准备申请香港升学，不建议一上来只看“热门专业”或经验帖。\n\n根据 Study in Hong Kong 官方指南，赴港升学前可以先从这几类官方信息入手：\n\n✅ 申请方式：了解不同院校和课程的申请入口与流程\n✅ 入学要求：具体成绩、语言、材料要求通常由院校和项目决定\n✅ 签证信息：非本地学生一般需要按规定办理相关入境/签证手续\n✅ 费用参考：提前查看学费、生活费及可能的奖学金信息\n✅ 支持服务：住宿、抵港安排、学生支援等也值得提前确认\n\n小提醒：香港高校和项目之间差异较大，申请时间、材料、面试安排都可能不同。建议把 Study in Hong Kong 作为官方信息入口，再逐一核对目标院校官网。\n\n本文仅作申请信息整理，不代表任何录取、签证、奖学金或就业保证。具体政策与要求请以官方及院校最新公布为准。",
+      "coverText": "港校申请先看"
     },
     {
       "id": "94e8104d006dcb5e",
@@ -1849,9 +1849,9 @@
       "imageLicenseStatus": "official-page",
       "canPublishImage": true,
       "coverTheme": "linear-gradient(135deg, #020617 0%, #1e3a8a 52%, #16a34a 100%)",
-      "time": "20:49",
-      "publishedAt": "2026-06-28T12:49:49.773Z",
-      "fetchedAt": "2026-06-28T12:49:49.773Z",
+      "time": "20:59",
+      "publishedAt": "2026-06-28T12:59:51.028Z",
+      "fetchedAt": "2026-06-28T12:59:51.028Z",
       "score": 95,
       "marketingScore": {
         "total": 86,
@@ -1890,26 +1890,26 @@
       ],
       "credibility": 4.8,
       "status": "待核验",
-      "summary": "基于UCAS官方本科统计发布页，可用于提醒英国本科申请者关注申请周期中的官方数据节点，但该页面本身不提供录取概率、签证或就业结论。",
+      "summary": "UCAS本科统计发布页汇总英国本科申请周期内按时间节点公布的核心申请数据，属于官方数据来源，适合用于观察申请趋势，但不能直接推断个人录取结果。",
       "impact": [
-        "UCAS本科统计发布会在申请周期内按既定时间点更新核心申请数据，适合用来观察整体申请趋势。",
-        "申请者可把官方数据作为了解竞争环境的参考之一，但不应直接等同于个人录取机会。",
-        "内容传播时需避免将统计数据解读为录取、签证或未来就业的保证。"
+        "可帮助申请者了解英国本科申请数据发布节奏，关注不同阶段的整体申请变化。",
+        "数据属于宏观统计，适合做趋势参考，不代表某一院校、专业或个人申请成功率。",
+        "做选校和申请规划时，仍需结合课程要求、个人成绩、语言能力、截止日期和院校官方信息。"
       ],
       "checks": [
         "来源为UCAS官方本科统计发布页面，可信度较高。",
-        "当前材料仅显示页面功能与导航信息，未包含具体院校、专业或录取率数据。",
-        "不建议据此生成“更容易录取”“必拿offer”等强结论。"
+        "原文强调提供当前申请周期内定期发布的核心申请数字。",
+        "未看到任何关于录取保证、签证结果或就业结果的承诺信息。"
       ],
       "tags": [
-        "英国本科申请",
-        "UCAS",
-        "留学申请",
-        "申请数据",
-        "英国留学"
+        "英国留学",
+        "UCAS申请",
+        "本科申请",
+        "留学规划",
+        "申请数据"
       ],
-      "draftTitle": "UCAS数据怎么看？",
-      "draftBody": "英国本科申请同学常听到“看UCAS数据”，但要注意：UCAS官方本科统计发布，主要是在申请周期内按时间点公布核心申请数据，用来帮助大家了解整体申请变化。\n\n它适合做什么？\n✅ 观察申请人数、周期节点等宏观趋势\n✅ 辅助判断申请环境是否更拥挤\n✅ 和院校官网、专业要求一起交叉参考\n\n不适合做什么？\n❌ 直接推算个人一定能录取\n❌ 判断某专业“稳进”\n❌ 延伸成签证或就业承诺\n\n对申请者来说，更稳妥的做法是：用UCAS数据看大趋势，再结合成绩、课程匹配度、文书、推荐信、截止日期等因素做规划。官方数据有参考价值，但不能替代个案评估。\n\n信息来源：UCAS Undergraduate releases（官方本科统计发布页）",
+      "draftTitle": "UCAS数据怎么看",
+      "draftBody": "英国本科申请别只看“热门专业”传言，UCAS官方其实会定期发布本科申请统计数据📌\n\n这类数据主要用于了解当前申请周期中的核心申请数字，比如不同时间节点的申请情况。它更适合帮助大家观察整体趋势，而不是判断“我一定能不能录”。\n\n给准备英国本科的同学几个提醒：\n\n1️⃣ UCAS数据是宏观统计，不能直接等同于个人录取概率。\n2️⃣ 选校时仍要回到院校官网，核对课程要求、成绩要求、语言要求和截止日期。\n3️⃣ 热度高不代表一定适合自己，课程设置、评估方式、城市和预算都要一起看。\n4️⃣ 申请结果受多因素影响，包括学术背景、文书、推荐信、课程竞争情况等。\n\n建议把UCAS统计当作“参考坐标”，而不是“录取预测器”。规划申请时，信息越来自官方，判断越稳妥。✅",
       "coverText": "UCAS数据"
     },
     {
@@ -1928,9 +1928,9 @@
       "imageLicenseStatus": "no-image",
       "canPublishImage": false,
       "coverTheme": "linear-gradient(135deg, #18181b 0%, #4338ca 48%, #dc2626 100%)",
-      "time": "20:49",
-      "publishedAt": "2026-06-28T12:49:51.645Z",
-      "fetchedAt": "2026-06-28T12:49:51.645Z",
+      "time": "20:59",
+      "publishedAt": "2026-06-28T12:59:52.006Z",
+      "fetchedAt": "2026-06-28T12:59:52.006Z",
       "score": 93,
       "marketingScore": {
         "total": 90,
@@ -1969,27 +1969,27 @@
       ],
       "credibility": 4.8,
       "status": "待核验",
-      "summary": "基于 UCAS 官方 News and Insights 页面信息，整理适合小红书发布的英国本科申请信息提醒，重点强调以官方更新为准，避免对录取、签证或就业作出保证。",
+      "summary": "基于 UCAS 官方 News and Insights 页面信息，可用于制作一篇提醒型小红书内容：关注英国本科申请信息时，应优先查看 UCAS 官方栏目及相关申请页面，尤其是时间节点、申请流程、个人陈述、费用资金、结果日和 Clearing 等主题。",
       "impact": [
-        "UCAS 是英国本科申请的重要官方平台，申请人应关注其新闻、截止日期、申请流程等官方信息。",
-        "页面覆盖申请前准备、选课、开放日、个人陈述、费用资助、申请后进度、录取决定、补录等主题。",
-        "相关信息可帮助学生和家长建立申请时间线意识，但具体要求仍需以 UCAS、院校及签证官方页面为准。"
+        "适合提醒准备英国本科申请的学生建立官方信息源意识，减少依赖二手传闻。",
+        "可引导学生按 UCAS 页面分类梳理申请前、申请中、提交后和结果阶段事项。",
+        "内容不涉及录取、签证或就业承诺，重点放在信息核对与规划习惯。"
       ],
       "checks": [
-        "来源为 UCAS 官方 News and Insights 页面，可信度较高。",
-        "原文为页面导航和概览信息，未提供具体政策变更或录取数据，因此不应解读为新政策发布。",
-        "内容未承诺录取结果、签证结果、奖学金或就业机会。"
+        "来源为 UCAS 官方 News and Insights 页面，属于英国本科申请相关官方信息入口。",
+        "原文页面呈现多个导航主题，包括申请前、选课、个人陈述、费用资金、录取决定、结果日和 Clearing 等。",
+        "未从来源中提取具体政策变化或截止日期，因此草稿避免写具体日期和确定性结论。"
       ],
       "tags": [
         "英国留学",
-        "UCAS申请",
-        "本科申请",
+        "UCAS",
+        "英国本科申请",
         "留学规划",
-        "英国本科"
+        "申请信息核对"
       ],
-      "draftTitle": "UCAS官网要看什么",
-      "draftBody": "准备英国本科申请的同学，UCAS 官网不是只在提交申请时才用。\n\n从 UCAS 官方 News and Insights 页面可见，官网信息覆盖了很多申请相关主题：\n\n✅ 申请前准备\n包括如何选课程、了解大学和学院、参加校园开放日、认识不同学习路径等。\n\n✅ 申请材料与流程\n页面导航中提到个人陈述、申请日期和截止时间、申请后如何查看进度、院校决定和 offer 等内容。\n\n✅ 结果与补录阶段\nUCAS 也有关于 Results day 和 Clearing 的相关信息入口，适合提前了解英国本科申请后期流程。\n\n✅ 费用与支持信息\n官网还覆盖 fees、loans、funding，以及有特殊需求学生的相关信息入口。\n\n提醒：UCAS 是重要官方信息来源，但不同大学、专业和年份要求可能不同。申请时建议同时核对 UCAS、目标院校官网，以及英国签证官方页面。\n\n不要把网上经验贴当成唯一依据，也不要轻信“保录取”“保签证”等说法。留学申请需要结合成绩、课程背景、语言能力、材料准备和具体院校要求综合判断。",
-      "coverText": "UCAS必看"
+      "draftTitle": "英国申请先看UCAS",
+      "draftBody": "准备英国本科申请，别只刷经验帖📌\n\nUCAS 官方 News and Insights 页面是一个值得收藏的信息入口。页面里能看到很多和申请相关的主题导航，比如：\n\n✅ 申请前要了解什么\n✅ 如何选择课程和学校\n✅ Personal statement 相关信息\n✅ 费用、贷款和资金\n✅ 提交申请后的流程\n✅ Decisions and offers\n✅ Results day 和 Clearing\n\n我的建议是：把 UCAS 当作“基础核对表”，再去看学校官网、专业页面和邮件通知。不同学校、不同专业要求可能不一样，最终还是要以官方页面和学校直接说明为准。\n\n尤其是时间节点、材料要求、是否需要面试、录取条件这些内容，不建议只听单一经验分享。经验可以参考，但不能替代官方信息。\n\n这篇不是说看完 UCAS 就一定能申请成功，也不代表任何录取、签证或就业结果。更适合用来提醒大家：英国申请信息很多，先把官方来源理清楚，会更稳一点。",
+      "coverText": "先看UCAS"
     },
     {
       "id": "0abda1d744c5c691",
@@ -2007,9 +2007,9 @@
       "imageLicenseStatus": "no-image",
       "canPublishImage": false,
       "coverTheme": "linear-gradient(135deg, #0f172a 0%, #1d4ed8 52%, #f59e0b 100%)",
-      "time": "20:51",
-      "publishedAt": "2026-06-28T12:51:07.402Z",
-      "fetchedAt": "2026-06-28T12:51:07.402Z",
+      "time": "21:00",
+      "publishedAt": "2026-06-28T13:00:59.672Z",
+      "fetchedAt": "2026-06-28T13:00:59.672Z",
       "score": 100,
       "marketingScore": {
         "total": 77,
@@ -2046,27 +2046,27 @@
       ],
       "credibility": 4.5,
       "status": "待核验",
-      "summary": "基于香港理工大学（PolyU）授课型研究生项目页面信息，整理一版小红书申请信息草稿，强调项目导向与查询路径，不做录取、签证或就业承诺。",
+      "summary": "基于香港理工大学官网授课型研究生页面信息，生成一版偏申请科普的小红书草稿，重点强调项目类型、职业导向和信息核验，不作录取、签证或就业承诺。",
       "impact": [
-        "可用于介绍PolyU授课型研究生项目的官方信息入口",
-        "适合提醒申请者按专业页面核对要求、截止日期和材料",
-        "内容保持审慎表述，避免将“职业导向”解读为就业保证"
+        "适合正在了解香港授课型硕士/研究生项目的学生做初步信息收集。",
+        "内容可引导用户关注学校官网的专业列表、招生要求、奖学金及资格核验入口。",
+        "营销表达保持谨慎，避免将“职业导向”解读为就业保证。"
       ],
       "checks": [
-        "来源为香港理工大学官方授课型研究生页面，可信度较高",
-        "原文提到授课型研究生项目、招生、项目查询及资格核验等入口",
-        "未发现可支持录取率、签证成功率或就业结果承诺的信息"
+        "来源为香港理工大学 PolyU 官方授课型研究生页面，可信度较高。",
+        "原文提到 taught postgraduate、Admissions、Find Your Programmes、奖学金及资格核验等入口。",
+        "未发现可支持录取率、签证成功率、就业结果或薪资水平的具体数据，因此不应在文案中使用相关承诺。"
       ],
       "tags": [
         "香港留学",
         "香港理工大学",
-        "PolyU",
         "授课型硕士",
-        "研究生申请"
+        "港硕申请",
+        "留学申请规划"
       ],
-      "draftTitle": "PolyU授课型硕士怎么查",
-      "draftBody": "想了解香港理工大学 PolyU 的授课型研究生项目，可以先从学校官方的 Taught Postgraduate 页面入手。\n\n页面信息显示，PolyU 提供授课型研究生项目，并设有 Admissions、Find Your Programmes、Qualification Verification 等相关入口。学校对这类项目的介绍偏向专业及行业相关能力培养，但这不等于录取、签证或就业结果的保证。\n\n建议申请前重点核对：\n1️⃣ 目标专业是否开放申请\n2️⃣ 入学要求、语言要求和材料清单\n3️⃣ 申请轮次与截止日期\n4️⃣ 学费、奖学金及资格核验说明\n\n不同学院和专业的要求可能不同，建议以具体项目页面和学校最新公告为准。如果你在选专业阶段，可以先列出背景、GPA、语言成绩和职业规划，再逐项匹配项目要求，避免只看学校名气就仓促申请。",
-      "coverText": "PolyU硕士"
+      "draftTitle": "港理工授课型研究生了解一下",
+      "draftBody": "想申请香港授课型研究生的同学，可以把香港理工大学 PolyU 官网的 Taught Postgraduate 页面作为信息核对入口之一。\n\n官网页面显示，PolyU 提供授课型研究生项目，并强调这些项目偏专业导向，旨在帮助学生发展与行业相关的知识和技能。页面中也能看到 Admissions、Find Your Programmes、Hong Kong Future Talents Scholarship Scheme for Advanced Studies，以及 Qualification Verification 等相关入口。\n\n整理申请信息时，建议重点看这几类内容：\n1️⃣ 目标专业是否开放申请\n2️⃣ 入学要求、语言要求和材料清单\n3️⃣ 申请轮次和截止日期\n4️⃣ 是否有适合自己的奖学金信息\n5️⃣ 学历/资格核验要求\n\n需要注意：官网提到“professionally oriented”并不等于保证就业，也不代表录取或签证结果。具体能否申请成功，仍取决于个人背景、材料质量、专业竞争情况和学校当年审核标准。\n\n如果你正在做港硕选校，可以先用官网专业列表筛选方向，再结合自己的本科背景、成绩、语言、实习/项目经历做匹配评估。",
+      "coverText": "港理工申研"
     },
     {
       "id": "ccf66f4bd94288ac",
@@ -2084,9 +2084,9 @@
       "imageLicenseStatus": "no-image",
       "canPublishImage": false,
       "coverTheme": "linear-gradient(135deg, #111827 0%, #047857 48%, #d97706 100%)",
-      "time": "20:51",
-      "publishedAt": "2026-06-28T12:51:06.963Z",
-      "fetchedAt": "2026-06-28T12:51:06.963Z",
+      "time": "21:00",
+      "publishedAt": "2026-06-28T13:00:57.076Z",
+      "fetchedAt": "2026-06-28T13:00:57.076Z",
       "score": 100,
       "marketingScore": {
         "total": 86,
@@ -2125,27 +2125,27 @@
       ],
       "credibility": 4.5,
       "status": "待核验",
-      "summary": "基于香港中文大学研究院招生官网信息，整理面向准研究生的申请信息型小红书草稿，强调项目、申请入口、奖学金与签证准备等需以官网为准。",
+      "summary": "基于香港中文大学研究院官方招生页面，整理适合小红书发布的研究生申请信息草稿，重点呈现项目数量、申请入口、奖学金与签证资料等公开信息。",
       "impact": [
-        "适合正在了解香港中文大学硕士或博士项目的申请人做初步信息收集。",
-        "内容可引导用户关注官方招生页面中的项目列表、申请要求、材料清单和截止日期。",
-        "避免使用保录取、保签证、就业承诺等高风险表述，降低营销合规风险。"
+        "信息来源为香港中文大学研究院官方招生页面，可信度较高。",
+        "内容可用于吸引关注香港研究生申请的学生了解官方申请路径。",
+        "需避免将项目数量、奖学金或校园资源表述为录取优势或结果承诺。"
       ],
       "checks": [
-        "来源为 CUHK Graduate School 招生页面，属于学校官方申请信息来源。",
-        "原文提及逾 200 个博士及硕士项目、奖学金与研究学习环境，但未承诺录取结果。",
-        "签证、费用、奖学金、截止日期等信息可能随年份和项目变化，需提醒申请人以官网最新页面为准。"
+        "未承诺录取、签证获批、奖学金获得或毕业就业结果。",
+        "未使用排名、成功率、保录取等未经来源支持的表述。",
+        "建议发布前再次核对具体项目截止日期、申请材料和费用，以官网最新页面为准。"
       ],
       "tags": [
         "香港留学",
         "香港中文大学",
         "CUHK",
         "研究生申请",
-        "硕士申请"
+        "港校申请"
       ],
-      "draftTitle": "港中文研究生申请看什么",
-      "draftBody": "想申请香港中文大学研究生，可以先从 CUHK Graduate School 官方招生页做信息整理📌\n\n官网面向 Prospective Students 提供了比较完整的入口，包括：\n✅ How to Apply 申请流程\n✅ Requirements 申请要求\n✅ Documents Required 所需材料\n✅ Application Deadlines 截止日期\n✅ Programme Listing 项目列表\n✅ Scholarships & Fees 奖学金与费用\n✅ Visa Application 签证申请信息\n\n官网介绍中提到，港中文研究生阶段有 200+ 博士及硕士项目，并提供奖学金相关信息与研究、学习环境介绍。具体到每个项目，要求、语言成绩、材料、轮次和截止时间可能不同，建议一定逐项核对项目页面和研究院最新说明。\n\n提醒：申请结果、奖学金、签证审批都不能提前保证。更稳妥的做法是尽早确认项目要求、准备成绩单/推荐信/个人陈述等材料，并持续查看官方更新。",
-      "coverText": "港中文申研"
+      "draftTitle": "港中文研究生申请看这里",
+      "draftBody": "想了解香港中文大学（CUHK）研究生申请，可以先从研究院官网的 Prospective Students 页面看起。\n\n官网信息显示，CUHK 提供超过 200 个博士及硕士课程，页面集中整理了申请方式、入学要求、所需文件、申请截止日期、线上申请系统、奖学金与学费、课程列表、注册，以及签证申请相关资料等内容。\n\n如果你正在准备港校研究生申请，建议优先做这几步：\n1️⃣ 先确认目标课程是否开放申请\n2️⃣ 查看该课程的具体入学要求和材料清单\n3️⃣ 留意不同项目的截止日期可能不同\n4️⃣ 奖学金信息要按官方说明逐项核对\n5️⃣ 涉及签证和入学准备，按学校最新指引执行\n\n提醒：不同学院、项目和申请轮次要求可能不一样，本文仅基于CUHK研究院公开招生页面做信息整理，不代表录取、奖学金或签证结果。最终请以学校官网最新信息为准。",
+      "coverText": "港中文申请"
     },
     {
       "id": "85cc536d37b1f030",
@@ -2163,9 +2163,9 @@
       "imageLicenseStatus": "no-image",
       "canPublishImage": false,
       "coverTheme": "linear-gradient(135deg, #111827 0%, #334155 48%, #b91c1c 100%)",
-      "time": "20:50",
-      "publishedAt": "2026-06-28T12:50:55.574Z",
-      "fetchedAt": "2026-06-28T12:50:55.574Z",
+      "time": "21:00",
+      "publishedAt": "2026-06-28T13:00:51.922Z",
+      "fetchedAt": "2026-06-28T13:00:51.922Z",
       "score": 100,
       "marketingScore": {
         "total": 80,
@@ -2203,27 +2203,27 @@
       ],
       "credibility": 4.8,
       "status": "待核验",
-      "summary": "基于香港入境事务处学生签证/进入许可页面整理：赴港就读通常需按入境安排申请相应签证或进入许可，申请会按资格、录取情况及个案材料审理。",
+      "summary": "基于香港入境事务处学生签证/进入许可页面：赴港学习通常需要按规定申请相应签证或进入许可，申请是否获批取决于入境处个案审理。",
       "impact": [
-        "赴港读书前，学生应先确认自己是否需要办理学生签证或进入许可，并以入境处最新要求为准。",
-        "页面提到申请可获考虑的前提包括已获合资格院校录取，但不代表提交申请后一定获批。",
-        "签证/进入许可审理属于个案判断，建议预留时间准备录取、身份、经济及其他支持材料。"
+        "计划赴港读书的同学，应在入学安排之外同步关注学生签证/进入许可申请要求。",
+        "页面显示，申请人需已获合资格院校录取，且学校类别与课程性质会影响是否符合申请条件。",
+        "签证结果并非自动获得，仍需以香港入境事务处最终审批为准。"
       ],
       "checks": [
-        "来源为香港入境事务处官方学生签证页面，政策信息可信度较高。",
-        "原文仅说明入境安排和资格考虑方向，不应解读为录取、签证或入境保证。",
-        "页面内容可能更新，正式申请前应再次核对官网及院校要求。"
+        "核对录取院校是否属于香港相关条例下注册或认可的学校/院校。",
+        "查看香港入境事务处官网最新学生签证/进入许可申请说明与所需材料。",
+        "预留审理时间，避免将行程、住宿或缴费安排建立在签证必然获批的假设上。"
       ],
       "tags": [
         "香港留学",
         "学生签证",
-        "香港入境处",
-        "留学申请",
-        "签证准备"
+        "赴港读书",
+        "香港入境事务处",
+        "留学申请"
       ],
-      "draftTitle": "赴港读书签证先看这几点",
-      "draftBody": "准备去香港读书的同学，学生签证/进入许可不要等到最后才看。\n\n根据香港入境事务处“Students”页面，赴港就读人士需要按相关入境安排申请签证或进入许可。一般来说，申请能否获考虑，会与申请人是否已获合资格学校录取等条件有关。\n\n这里要特别提醒：\n✅ 拿到学校录取 ≠ 签证一定获批\n✅ 提交材料 ≠ 一定能按预期时间出结果\n✅ 政策页面会更新，最终以入境处官网和院校通知为准\n\n建议大家在确认录取后，尽早核对：\n1）自己是否需要学生签证/进入许可\n2）学校是否符合相关要求\n3）申请材料、递交流程和预计时间\n4）是否需要后续办理逗留期限延长\n\n留学规划里，签证不是“走流程”这么简单，更适合提前做清单、留足缓冲时间。本文仅作政策信息整理，不构成签证、录取或入境结果承诺。",
-      "coverText": "赴港签证"
+      "draftTitle": "赴港读书先看学生签证",
+      "draftBody": "准备去香港读书的同学，别只盯着 offer 和选课，学生签证/进入许可也要提前了解。\n\n根据香港入境事务处官网说明，赴港学习人士需按相关入境安排申请签证或进入许可。一般来说，申请能否被考虑，与申请人是否已获合资格学校/院校录取等因素有关；不同学校类型、课程阶段也可能对应不同要求。\n\n这里提醒大家几点：\n1️⃣ 先确认录取院校及课程是否符合官方要求\n2️⃣ 以香港入境事务处官网材料清单为准，不要只看二手攻略\n3️⃣ 签证/进入许可不是“有 offer 就必过”，最终以入境处审批为准\n4️⃣ 机票、住宿、报到安排建议留出时间余量\n\n这类政策信息更新可能较细，建议申请前直接查看官方页面，必要时向学校国际事务/招生办公室确认流程。",
+      "coverText": "赴港签证提醒"
     },
     {
       "id": "e1e87ffbd837e8cf",
@@ -2241,9 +2241,9 @@
       "imageLicenseStatus": "no-image",
       "canPublishImage": false,
       "coverTheme": "linear-gradient(135deg, #0f172a 0%, #1d4ed8 52%, #f59e0b 100%)",
-      "time": "20:50",
-      "publishedAt": "2026-06-28T12:50:47.365Z",
-      "fetchedAt": "2026-06-28T12:50:47.365Z",
+      "time": "21:00",
+      "publishedAt": "2026-06-28T13:00:45.688Z",
+      "fetchedAt": "2026-06-28T13:00:45.688Z",
       "score": 100,
       "marketingScore": {
         "total": 85,
@@ -2281,26 +2281,26 @@
       ],
       "credibility": 4.8,
       "status": "待核验",
-      "summary": "基于香港官方 Study in Hong Kong 奖学金页面，整理香港留学奖学金信息的合规小红书草稿，重点提示以院校与官方最新要求为准。",
+      "summary": "基于香港官方留学信息网站“Study in Hong Kong”奖学金页面，整理适合小红书发布的谨慎版图文草稿，重点提示学生关注官方奖学金信息、申请要求与院校差异。",
       "impact": [
-        "可作为香港留学费用规划的早期参考，帮助学生关注奖学金渠道。",
-        "适合提醒申请人核对官方页面、院校官网及具体项目要求，避免误读。",
-        "不涉及录取、签证或就业承诺，仅做信息型内容分享。"
+        "香港官方留学信息网站设有奖学金相关栏目，可作为了解香港升学资助信息的起点。",
+        "奖学金通常与院校、课程、申请人背景及评审标准有关，不能简单理解为自动获得。",
+        "准备申请香港高校的学生，建议同步核对学费、生活费、签证、住宿和支持服务等官方信息。"
       ],
       "checks": [
-        "来源为 Study in Hong Kong 官方留学信息页面，可信度较高，但需以最新页面为准。",
-        "原文仅显示奖学金相关栏目与留学信息导航，未提供具体金额或获奖概率，草稿不应扩展细节。",
-        "避免使用“必拿奖学金”“保录取”“低成本稳上”等夸大表述。"
+        "来源为官方性质网站 Study in Hong Kong，可信度较高，但具体奖学金细则仍需以院校官网为准。",
+        "原始内容仅显示奖学金栏目及相关导航信息，未包含具体金额、名额或获奖条件。",
+        "文案已避免承诺录取、签证、奖学金获得或毕业就业结果。"
       ],
       "tags": [
         "香港留学",
-        "奖学金信息",
-        "留学申请",
-        "官方信息",
-        "留学规划"
+        "香港升学",
+        "留学奖学金",
+        "StudyinHongKong",
+        "留学申请"
       ],
-      "draftTitle": "香港留学奖学金先看官方",
-      "draftBody": "准备申请香港高校的同学，做预算时别只看学费和生活费，也可以提前了解奖学金信息。\n\nStudy in Hong Kong 官方网站设有 Scholarships（奖学金）相关页面，并与香港教育、学费生活费、申请方式、签证、院校及课程等信息放在同一留学信息体系中，适合作为前期规划参考。\n\n但要注意：不同院校、不同项目的奖学金名称、申请条件、金额、截止时间和评审标准可能不同，是否获得奖学金通常也会受学术背景、申请材料、项目名额等因素影响。\n\n建议大家这样做：\n1. 先看官方 Study in Hong Kong 页面了解整体信息；\n2. 再到目标院校官网核对具体奖学金要求；\n3. 记录截止日期，和专业申请时间一起规划；\n4. 不要把奖学金当作确定收入来源。\n\n留学预算建议按“无奖学金也可承担”的情况来评估，再把奖学金作为可能的补充支持。这样会更稳妥，也更符合真实申请情况。",
+      "draftTitle": "香港留学奖学金怎么查",
+      "draftBody": "想申请香港高校的同学，奖学金信息建议先从官方渠道查起。\n\n香港官方留学信息网站 Study in Hong Kong 设有 Scholarships（奖学金）相关页面，同时也能看到申请、签证、学费生活费、住宿和学生支持服务等栏目。\n\n但要注意：奖学金不是“申请就有”，也不代表一定能降低全部费用。不同院校、课程和奖项通常会有各自的评审标准，例如学术背景、申请材料、竞争情况或是否需要单独递交申请。\n\n比较稳妥的做法是：\n1️⃣ 先看 Study in Hong Kong 的官方说明\n2️⃣ 再进入目标院校官网核对最新细则\n3️⃣ 留意截止日期、申请资格和是否需要额外材料\n4️⃣ 预算时不要只按“可能拿奖学金”来规划\n\n如果你正在准备香港申请，可以把奖学金当作重要参考，但不要把它当作确定结果。录取、签证和奖学金都需要按官方要求独立评估。",
       "coverText": "港校奖学金"
     },
     {
@@ -2319,9 +2319,9 @@
       "imageLicenseStatus": "no-image",
       "canPublishImage": false,
       "coverTheme": "linear-gradient(135deg, #111827 0%, #047857 48%, #d97706 100%)",
-      "time": "20:50",
-      "publishedAt": "2026-06-28T12:50:46.110Z",
-      "fetchedAt": "2026-06-28T12:50:46.110Z",
+      "time": "21:00",
+      "publishedAt": "2026-06-28T13:00:44.549Z",
+      "fetchedAt": "2026-06-28T13:00:44.549Z",
       "score": 100,
       "marketingScore": {
         "total": 83,
@@ -2359,27 +2359,27 @@
       ],
       "credibility": 4.8,
       "status": "待核验",
-      "summary": "基于 Study in Hong Kong 官方签证页面信息，整理赴港留学签证准备的保守版小红书草稿，强调以院校与入境处最新要求为准。",
+      "summary": "基于香港官方 Study in Hong Kong 的签证相关页面，面向计划赴港升学的学生整理申请前应关注的签证与入境信息入口。",
       "impact": [
-        "适合用于解释赴港读书前需要关注学生签证或进入许可安排，降低信息误读风险。",
-        "内容不涉及录取、签证或就业承诺，仅提示申请人应按官方流程准备材料。",
-        "可引导用户进一步核对学校通知、香港入境事务处及 Study in Hong Kong 官方页面。"
+        "赴港读书通常需要提前了解学生签证或入境许可要求，具体适用情况应以香港官方部门最新说明为准。",
+        "签证办理可能涉及院校录取文件、身份证明及其他材料，建议预留充足时间准备。",
+        "页面同时关联住宿、抵港、支援服务及受养人入境等信息，适合做赴港前信息核对。"
       ],
       "checks": [
-        "来源为 Study in Hong Kong 官方留学信息网站的签证相关页面，可信度较高。",
-        "原文截取信息有限，具体材料清单、审批时间和个案要求不应在文案中作确定性描述。",
-        "避免使用“保证获批”“快速下签”“毕业留港稳了”等夸大或承诺性表述。"
+        "不承诺学生签证或入境许可一定获批。",
+        "不将官方信息解读为任何院校录取保证。",
+        "提醒申请人以官方页面和院校最新通知为准。"
       ],
       "tags": [
         "香港留学",
-        "留学签证",
         "赴港读书",
+        "学生签证",
         "留学申请",
         "StudyinHongKong"
       ],
-      "draftTitle": "赴港留学签证别忽略",
-      "draftBody": "准备去香港读书的同学，拿到学校录取后，别忘了尽早核对签证/进入许可相关安排📌\n\n根据 Study in Hong Kong 官方留学信息页面，赴港学习通常需要关注签证相关要求。具体流程、材料和时间安排，建议以学校发出的指引、香港入境事务处要求，以及官方页面最新信息为准。\n\n✅ 建议提前做这几件事：\n1️⃣ 查看学校 offer 邮件和学生签证说明\n2️⃣ 确认自己是否需要办理学生签证/进入许可\n3️⃣ 按官方要求准备身份证明、录取文件、资金等相关材料\n4️⃣ 预留审核和补件时间，不要等到临近开学才处理\n\n提醒：不同身份、课程类型和个人情况可能会影响要求，任何签证结果都不能提前保证。遇到不确定的地方，优先咨询学校国际学生办公室或查官方渠道～",
-      "coverText": "签证别拖"
+      "draftTitle": "赴港读书签证先看这页",
+      "draftBody": "准备去香港读书的同学，除了选校和申请，也别忘了提前看签证/入境安排。\n\n香港官方 Study in Hong Kong 网站在“Apply to Study”栏目下设有 Visas 页面，适合用来做信息核对：\n\n✅ 了解赴港学习可能涉及的签证或入境许可要求\n✅ 对照院校录取、入学时间，预留材料准备和办理时间\n✅ 顺手查看抵港、住宿、支援服务、受养人入境等相关栏目\n\n需要注意：签证或入境许可是否获批，取决于官方审核和个人情况；拿到学校 offer 也不等于签证自动通过。不同身份、课程类型和个人背景可能对应不同要求。\n\n建议大家：\n1）先看官方页面最新说明\n2）再核对学校发来的入学/签证指引\n3）有不确定情况，及时联系学校或相关官方部门确认\n\n信息源：Study in Hong Kong 官方网站 Visas 页面。内容仅作申请前信息整理，不构成录取、签证或就业承诺。",
+      "coverText": "赴港签证"
     },
     {
       "id": "a256917cd0445d7c",
@@ -2397,9 +2397,9 @@
       "imageLicenseStatus": "no-image",
       "canPublishImage": false,
       "coverTheme": "linear-gradient(135deg, #111827 0%, #334155 48%, #b91c1c 100%)",
-      "time": "20:50",
-      "publishedAt": "2026-06-28T12:50:45.191Z",
-      "fetchedAt": "2026-06-28T12:50:45.191Z",
+      "time": "21:00",
+      "publishedAt": "2026-06-28T13:00:43.402Z",
+      "fetchedAt": "2026-06-28T13:00:43.402Z",
       "score": 100,
       "marketingScore": {
         "total": 83,
@@ -2437,27 +2437,27 @@
       ],
       "credibility": 4.8,
       "status": "待核验",
-      "summary": "基于香港官方留学资讯网站 Study in Hong Kong 的入学要求页面，整理适合小红书发布的申请科普草稿，重点提示学生以院校及项目页面为准，避免将一般性要求理解为录取保证。",
+      "summary": "基于香港官方 Study in Hong Kong「Admission Requirement」页面信息，整理适合小红书发布的香港升学申请提醒，重点强调以院校与课程官方要求为准。",
       "impact": [
-        "可用于向计划赴港升学的学生说明：香港高校通常会按课程、学历背景和语言能力等因素审核申请。",
-        "内容强调官方信息与院校要求优先，降低营销话术中过度承诺录取、签证或就业结果的风险。",
-        "适合做成申请前自查类图文，引导用户进一步核对目标院校、专业和签证页面。"
+        "帮助学生初步了解香港升学申请需关注入学要求、申请方式与签证等官方信息入口。",
+        "降低因只看非官方经验帖而忽略院校具体要求的风险。",
+        "适合用于留学规划早期科普，不涉及录取、签证或就业承诺。"
       ],
       "checks": [
-        "未承诺录取结果、奖学金、签证获批或毕业后就业。",
-        "未声称所有学校或所有专业要求一致，已提示以具体院校及课程为准。",
-        "信息来源为官方指南页面，但原文截取有限，草稿仅做概括性科普。"
+        "来源为香港官方留学信息网站 Study in Hong Kong，可信度较高。",
+        "原文页面为入学要求相关官方指南，但具体课程要求仍需查看目标院校官网。",
+        "内容避免使用“保证录取”“轻松拿签”“毕业即就业”等绝对化表述。"
       ],
       "tags": [
         "香港留学",
         "香港升学",
         "留学申请",
-        "官方信息",
-        "申请准备"
+        "申请规划",
+        "官方信息"
       ],
-      "draftTitle": "香港留学申请先看这几点",
-      "draftBody": "想申请香港升学，别一上来只问“我能不能录”。更稳妥的做法，是先看官方和院校要求。\n\n根据 Study in Hong Kong 官方入学要求页面，申请香港院校时，通常需要关注：\n\n✅ 学历背景：不同课程会对应不同入学资格要求\n✅ 课程要求：本科、硕士、职业及专业课程的条件可能不同\n✅ 语言能力：不少课程会参考英语或其他语言能力证明\n✅ 院校差异：具体分数、材料、截止日期要看目标学校和专业页面\n\n需要注意：满足基础要求不等于一定录取。学校通常还会综合评估申请材料、竞争情况和课程名额等因素。\n\n建议申请前做 3 件事：\n1️⃣ 先确认目标课程的官方入学要求\n2️⃣ 核对申请截止日期和材料清单\n3️⃣ 如涉及来港学习，再单独查看签证/入境安排说明\n\n留学规划可以早准备，但不要轻信“保录”“包签”“保证就业”这类说法。官方信息+个人背景评估，才是更稳的起点。",
-      "coverText": "港校申请先看"
+      "draftTitle": "香港申请先看入学要求",
+      "draftBody": "准备申请香港高校，第一步不建议只刷经验帖，而是先看官方信息入口。\n\n香港官方 Study in Hong Kong 网站在“Apply to Study”栏目下设有 Admission Requirement、How to Apply、Visas 等页面，说明申请香港院校时，入学要求、申请流程和签证信息都需要分别确认。\n\n给同学们几个稳妥提醒：\n1️⃣ 不同院校、不同专业的成绩、语言、材料要求可能不同；\n2️⃣ 官方平台适合做基础了解，最终仍要以目标院校和项目页面为准；\n3️⃣ 申请时间线、材料清单、签证安排建议提前核对，避免临近截止才发现遗漏；\n4️⃣ 奖学金、住宿、生活费用等也应结合官方页面和学校通知综合判断。\n\n香港升学机会不少，但申请结果受背景、专业匹配、名额和审核标准等多因素影响。建议尽早规划、逐项核实，不做“保录取”或“包签证”的预期。",
+      "coverText": "港申必看"
     },
     {
       "id": "98fabefb51c3bf2d",
@@ -2475,9 +2475,9 @@
       "imageLicenseStatus": "no-image",
       "canPublishImage": false,
       "coverTheme": "linear-gradient(135deg, #0f172a 0%, #1d4ed8 52%, #f59e0b 100%)",
-      "time": "20:50",
-      "publishedAt": "2026-06-28T12:50:42.897Z",
-      "fetchedAt": "2026-06-28T12:50:42.897Z",
+      "time": "21:00",
+      "publishedAt": "2026-06-28T13:00:41.187Z",
+      "fetchedAt": "2026-06-28T13:00:41.187Z",
       "score": 100,
       "marketingScore": {
         "total": 83,
@@ -2515,27 +2515,27 @@
       ],
       "credibility": 4.8,
       "status": "待核验",
-      "summary": "基于香港官方“Study in Hong Kong”申请指南页面，整理面向计划赴港升学学生的图文草稿，重点提示申请、签证、费用、住宿与支持服务等需以院校及官方最新信息为准。",
+      "summary": "基于香港官方留学门户 Study in Hong Kong 的“Apply to Study”页面，整理赴港申请前需要重点核对的官方信息入口与注意事项。",
       "impact": [
-        "帮助学生初步了解赴港升学前需要关注的官方信息入口",
-        "降低因只看非官方经验帖而忽略申请、签证和生活安排细节的风险",
-        "适合用于留学前期科普，不涉及录取、签证或就业结果承诺"
+        "适合正在初步了解香港升学路径的学生和家长，用于建立申请信息框架。",
+        "页面提供申请、签证、入学要求、生活安排等官方栏目入口，但具体要求仍需以院校和香港入境事务处最新公布为准。",
+        "内容可用于种草型科普，不宜表述为录取、签证或就业结果保证。"
       ],
       "checks": [
-        "来源为 Study in Hong Kong 官方指南页面，可信度较高",
-        "原文仅显示栏目与申请相关信息入口，不能据此推断具体录取要求或成功率",
-        "内容需提醒读者以目标院校、香港入境事务处及官方页面最新说明为准"
+        "来源为 Study in Hong Kong 官方留学门户，可信度较高，但页面为指南入口性质。",
+        "未看到具体院校录取标准、签证审批时长或毕业就业结果承诺。",
+        "发布/抓取时间为 2026-06-28，实际申请前仍建议复核官网最新页面。"
       ],
       "tags": [
         "香港留学",
-        "港校申请",
-        "留学规划",
+        "赴港升学",
+        "留学申请",
         "官方信息",
-        "申请准备"
+        "留学规划"
       ],
-      "draftTitle": "赴港留学先看官方信息",
-      "draftBody": "准备申请香港高校，别只刷经验帖📌\n\n香港官方 Study in Hong Kong 页面把赴港升学相关信息集中在一起，包括：\n\n✅ 如何申请\n✅ 签证相关信息\n✅ 入学要求\n✅ 学费与生活费用\n✅ 奖学金\n✅ 实习与兼职\n✅ 住宿、抵港和支持服务\n✅ 院校及课程信息入口\n\n对申请人来说，这类官方页面更适合作为“第一层信息源”：先确认有哪些事项需要准备，再去目标院校官网核对具体专业要求、申请时间、材料清单和费用说明。\n\n需要注意的是：不同院校、不同课程的要求可能差异很大，官方汇总页不能替代学校官网，也不能代表录取、签证或奖学金结果。\n\n建议准备赴港升学的同学做三步：\n1️⃣ 先看 Study in Hong Kong 官方指南\n2️⃣ 再查目标院校与专业官网\n3️⃣ 涉及签证、入境、逗留安排时，以香港相关官方部门最新说明为准\n\n理性规划，信息来源越清楚，后续准备越稳。",
-      "coverText": "港校申请必看"
+      "draftTitle": "赴港留学先看这几个官方入口",
+      "draftBody": "准备申请香港院校前，建议先把官方信息入口捋清楚📌\n\n香港官方留学门户 Study in Hong Kong 的 Apply to Study 页面，把申请相关内容分成了几个重要方向：\n\n✅ How to Apply：了解整体申请流程入口\n✅ Visas：查看学生签证相关信息入口\n✅ Admission Requirement：核对入学要求方向\n✅ Living in Hong Kong：提前了解住宿、抵港、支持服务等生活安排\n\n对刚开始做规划的同学来说，这类官方页面更适合作为“第一轮信息框架”，帮助你知道接下来要查什么、问什么、准备什么。\n\n但也要注意：\n不同院校、专业、学历层级的申请要求可能不同；签证审批也需要以香港入境事务处及相关官方说明为准。不要只看一篇笔记就做决定，申请前一定要回到院校官网和官方部门页面逐项确认。\n\n适合收藏：作为赴港申请前的信息核对清单✅",
+      "coverText": "赴港申请入口"
     }
   ]
 }
