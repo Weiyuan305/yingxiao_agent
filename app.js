@@ -649,6 +649,10 @@ function sourceTrustLabel(source) {
   return source.type || '数据源'
 }
 
+function isRealDataMode() {
+  return dataMeta.mode === 'real-data' || dataMeta.mode === 'agent-pipeline'
+}
+
 function sourceFixHint(source) {
   if (source.id?.startsWith('x-') || /x\.com/i.test(source.name || '')) {
     return {
@@ -838,7 +842,7 @@ function renderWorkflowStatus() {
 }
 
 function updateIntegrationStatus() {
-  const realDataLoaded = dataMeta.mode === 'real-data'
+  const realDataLoaded = isRealDataMode()
   const llmMode = dataMeta.llm?.mode || 'not-run'
   const llmEnabled = Boolean(dataMeta.llm?.enabled)
   const llmErrorCount = Number(dataMeta.llm?.errorCount || 0)
@@ -1324,10 +1328,10 @@ function renderSources() {
       region: item.region,
       sourceTypeLabel: item.sourceType,
       trustLevel: item.sourceTrustLevel || 'demo',
-      ok: dataMeta.mode === 'real-data',
+      ok: isRealDataMode(),
       skipped: false,
       itemCount: 1,
-      message: dataMeta.mode === 'real-data' ? 'ok' : 'demo fallback'
+      message: isRealDataMode() ? 'ok' : 'demo fallback'
     }))
 
   document.querySelectorAll('[data-source-filter]').forEach(button => {

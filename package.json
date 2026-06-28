@@ -4,14 +4,19 @@
   "private": true,
   "description": "Hong Kong, UK, and Singapore study-abroad marketing intelligence agent MVP.",
   "scripts": {
-    "serve": "node server.mjs",
+    "build": "tsc -p tsconfig.json",
+    "serve": "npm run build && node server.mjs",
     "collect": "node scripts/collect.mjs",
-    "agent": "node scripts/agent.mjs",
-    "refresh": "node scripts/run-agent.mjs",
-    "test": "node scripts/marketing.test.mjs",
-    "check": "node --check app.js && node --check server.mjs && node --check scripts/env.mjs && node --check scripts/collect.mjs && node --check scripts/agent.mjs && node --check scripts/marketing.mjs && node --check scripts/run-agent.mjs && npm run test"
+    "agent": "npm run build && node scripts/agent.mjs",
+    "refresh": "npm run build && node scripts/run-agent.mjs",
+    "test": "npm run build && node scripts/marketing.test.mjs && node tests/agent-pipeline.test.mjs",
+    "check": "npm run build && node --check app.js && node --check server.mjs && node --check scripts/env.mjs && node --check scripts/collect.mjs && node --check scripts/agent.mjs && node --check scripts/marketing.mjs && node --check scripts/run-agent.mjs && npm run test"
   },
   "engines": {
     "node": ">=20"
+  },
+  "devDependencies": {
+    "@types/node": "^26.0.1",
+    "typescript": "^6.0.3"
   }
 }

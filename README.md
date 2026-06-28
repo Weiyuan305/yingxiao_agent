@@ -1,6 +1,6 @@
 # 留学营销智能体 Agent
 
-面向留学机构运营和内容团队的营销智能体 MVP。系统会从香港、英国、新加坡相关的官方源、院校源、新闻源和手动社媒收件箱采集信息，整理成留学情报，再生成小红书图文草稿、封面建议、核验清单、发布排期和复盘记录。
+面向留学机构运营和内容团队的营销智能体 MVP。系统会从香港、英国、新加坡相关的官方源、院校源、新闻源和手动社媒收件箱采集信息，整理成留学情报，再由 TypeScript Agent 编排选题评分、每日推荐、LLM/规则生成、封面建议、核验清单、发布排期和复盘记录。
 
 当前版本重点支持“小红书图文生产”流程：每日选题、选题评分、标题正文生成、封面风格切换、人工核验、手动发布和效果复盘。项目默认不自动登录或自动发布小红书 / 抖音，避免平台风控风险。
 
@@ -9,6 +9,7 @@
 要求 Node.js 20 或以上。
 
 ```bash
+npm install
 cp .env.example .env
 npm run check
 npm run refresh
@@ -32,11 +33,12 @@ npm run serve
 ## 常用命令
 
 - `npm run refresh`：采集真实数据并生成小红书草稿，更新 `data/intelligence.json`。
-- `npm run serve`：启动本地 Node 服务，支持 `/api/intelligence`、`/api/refresh` 和前端页面。
+- `npm run serve`：编译 TypeScript 后启动本地 Node 服务，支持 `/api/intelligence`、`/api/collect/run` 和前端页面。
 - `npm run collect`：只采集原始数据，输出 `data/collected.json`。
-- `npm run agent`：基于已采集数据生成小红书草稿。
-- `npm run test`：运行营销评分相关测试。
-- `npm run check`：检查前端和脚本语法，并运行测试。
+- `npm run agent`：编译 TypeScript Agent，并基于已采集数据生成小红书草稿。
+- `npm run build`：把 `src/agent/**/*.mts` 编译到 `dist/agent/`。
+- `npm run test`：运行营销评分和 Agent pipeline 测试。
+- `npm run check`：编译 TypeScript、检查前端和脚本语法，并运行测试。
 
 ## 环境配置
 
@@ -66,8 +68,10 @@ X_BEARER_TOKEN=
 
 - 真实数据源配置：`config/sources.json`。
 - 真实采集器：`scripts/collect.mjs`，支持 RSS/Atom、GOV.UK Content API、Google News RSS、官方页面、X.com recent search。
-- Agent 生成器：`scripts/agent.mjs`，支持 OpenAI-compatible API；没有 Key 时使用规则兜底生成摘要、核验点、标题、正文、标签和封面文案。
-- 营销评分器：`scripts/marketing.mjs`，按政策影响、热点热度、紧急程度、收藏价值和专业可信度评分。
+- TypeScript Agent 核心：`src/agent/pipeline.mts`，按 `ingest -> score -> recommend -> generate -> package` 编排完整内容生产流程，并在输出 JSON 的 `meta.agent.steps` 里记录每一步 trace。
+- Agent 生成器：`src/agent/llm.mts` + `src/agent/rules.mts`，支持 OpenAI-compatible API；没有 Key 或模型失败时使用规则兜底生成摘要、核验点、标题、正文、标签和封面文案。
+- 营销评分器：`src/agent/marketing.mts`，按政策影响、热点热度、紧急程度、收藏价值和专业可信度评分。
+- 兼容入口：`scripts/agent.mjs`、`scripts/marketing.mjs` 保留原 import 路径，但实际调用 `dist/agent/` 的 TypeScript 编译产物。
 - 本地 API 服务：`server.mjs`。
 - 前端工作台：`index.html`、`styles.css`、`app.js`，从 `/api/intelligence` 或 `data/intelligence.json` 读取真实 JSON。
 - 每日推荐：自动给出 3-5 篇候选，用户可以手动选择今日创作内容。
@@ -106,15 +110,17 @@ X_BEARER_TOKEN=
 ├── styles.css              # UI 样式
 ├── app.js                  # 前端交互和本地状态
 ├── server.mjs              # 本地 API 服务
-├── scripts/                # 采集、Agent 生成、评分和测试脚本
+├── src/agent/              # TypeScript Agent 核心
+├── scripts/                # 采集脚本和兼容入口
 ├── config/sources.json     # 数据源配置
 ├── data/intelligence.json  # 当前展示用情报数据
 ├── data/collected.json     # 最近一次采集结果
 ├── assets/                 # 示例封面和视觉资产
+├── tests/                  # Agent pipeline 测试
 └── research/               # 调研、方案和实现说明
 ```
 
-`data/raw/` 是历史采集快照缓存，默认不提交到仓库。
+`dist/` 是 TypeScript 编译产物，运行 `npm run build` 自动生成；`data/raw/` 是历史采集快照缓存，默认不提交到仓库。
 
 ## 相关文档
 
