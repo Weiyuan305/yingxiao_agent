@@ -12,6 +12,9 @@ pnpm-debug.log*
 *.log
 
 data/raw/
+data/store.json
+data/store.json.tmp
+data/usage.json
 dist/
 build/
 coverage/
