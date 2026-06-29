@@ -3,9 +3,12 @@ import { readFile, stat } from 'node:fs/promises'
 import http from 'node:http'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { writeFile } from 'node:fs/promises'
 import { collectAll } from './scripts/collect.mjs'
 import { buildIntelligence, generateOne, streamOne, factCheck } from './scripts/agent.mjs'
 import { loadLocalEnv } from './scripts/env.mjs'
+import { createRepository, DRAFT_STATUSES, DRAFT_STATUS_LABELS } from './scripts/store.mjs'
+import { createRateLimiter, safeEqual } from './scripts/security.mjs'
 
 await loadLocalEnv()
 
@@ -14,6 +17,65 @@ const port = Number(process.env.PORT || 4173)
 const host = process.env.HOST || '127.0.0.1'
 const refreshIntervalHours = Number(process.env.REFRESH_INTERVAL_HOURS || 24)
 let collecting = false
+
+// ---- 安全：鉴权（默认 OFF）+ 限流 + 用量统计 ----
+const appToken = String(process.env.APP_TOKEN || '').trim()
+const authRequired = appToken.length > 0
+if (!authRequired) {
+  console.warn('⚠ APP_TOKEN 未设置：/api 接口未鉴权（本机开发可用；对外/多人前请设置 APP_TOKEN）。')
+}
+const rateLimitPerMin = Number(process.env.RATE_LIMIT_PER_MIN || 20)
+const generateLimiter = createRateLimiter({ max: Math.max(1, rateLimitPerMin), windowMs: 60_000 })
+const usagePath = path.join(rootDir, 'data', 'usage.json')
+const usage = await loadUsage()
+
+function clientIp(request) {
+  const forwarded = String(request.headers['x-forwarded-for'] || '').split(',')[0].trim()
+  return forwarded || request.socket?.remoteAddress || 'unknown'
+}
+
+function isAuthorized(request) {
+  if (!authRequired) return true
+  const header = String(request.headers['authorization'] || '')
+  const bearer = header.startsWith('Bearer ') ? header.slice(7) : ''
+  const provided = bearer || String(request.headers['x-app-token'] || '')
+  return Boolean(provided) && safeEqual(provided, appToken)
+}
+
+async function loadUsage() {
+  try {
+    const parsed = JSON.parse(await readFile(usagePath, 'utf8'))
+    return parsed && typeof parsed === 'object' ? parsed : {}
+  } catch {
+    return {}
+  }
+}
+
+let usageWriteTimer = null
+function recordUsage(endpoint) {
+  const day = new Date().toISOString().slice(0, 10)
+  usage[day] = usage[day] || {}
+  usage[day][endpoint] = (usage[day][endpoint] || 0) + 1
+  clearTimeout(usageWriteTimer)
+  usageWriteTimer = setTimeout(() => {
+    writeFile(usagePath, JSON.stringify(usage, null, 2)).catch(() => {})
+  }, 1000)
+}
+
+const repo = createRepository(path.join(rootDir, 'data', 'store.json'))
+// 启动时用现有 intelligence.json 建档（已存在的只补空、不覆盖）。
+await seedDraftsFromIntelligence().catch(error => console.error(`seed drafts failed: ${error.message}`))
+
+async function seedDraftsFromIntelligence() {
+  try {
+    const intelligence = await readJson(path.join(rootDir, 'data', 'intelligence.json'))
+    const items = Array.isArray(intelligence.items) ? intelligence.items : []
+    const created = await repo.seedFromSources(items)
+    if (created) console.log(`Seeded ${created} new drafts into store.`)
+  } catch {
+    // intelligence.json 还没生成时跳过
+  }
+}
 
 const mimeTypes = {
   '.html': 'text/html;charset=utf-8',
@@ -31,14 +93,39 @@ const server = http.createServer(async (request, response) => {
   try {
     const url = new URL(request.url, `http://${request.headers.host}`)
 
+    // health 永远开放，前端据此知道是否需要 token
     if (url.pathname === '/api/health') {
       return sendJson(response, {
         ok: true,
         mode: 'node-server',
         now: new Date().toISOString(),
+        authRequired,
         hasOpenAiKey: Boolean(process.env.OPENAI_API_KEY || process.env.LLM_API_KEY),
         hasXBearerToken: Boolean(process.env.X_BEARER_TOKEN)
       })
+    }
+
+    // 其余 /api/* 需要鉴权（默认 OFF）
+    if (url.pathname.startsWith('/api/') && !isAuthorized(request)) {
+      return sendJson(response, { ok: false, code: 'unauthorized', message: '需要有效的访问令牌' }, 401)
+    }
+
+    // 生成类端点按 IP 限流，防止 token 被刷
+    if (url.pathname === '/api/generate' || url.pathname === '/api/generate/stream') {
+      const verdict = generateLimiter.check(clientIp(request))
+      if (!verdict.allowed) {
+        response.writeHead(429, {
+          'content-type': 'application/json;charset=utf-8',
+          'retry-after': String(Math.ceil(verdict.retryAfterMs / 1000))
+        })
+        return response.end(JSON.stringify({ ok: false, code: 'rate_limited', message: `请求过于频繁，请 ${Math.ceil(verdict.retryAfterMs / 1000)} 秒后再试` }))
+      }
+      recordUsage(url.pathname === '/api/generate/stream' ? 'stream' : 'generate')
+    }
+    if (url.pathname === '/api/factcheck') recordUsage('factcheck')
+
+    if (url.pathname === '/api/usage' && request.method === 'GET') {
+      return sendJson(response, { ok: true, usage })
     }
 
     if (url.pathname === '/api/sources') {
@@ -60,6 +147,7 @@ const server = http.createServer(async (request, response) => {
       collecting = true
       try {
         const { collected, intelligence } = await runRefresh()
+        await repo.seedFromSources(Array.isArray(intelligence.items) ? intelligence.items : [])
         return sendJson(response, {
           ok: true,
           collected: collected.meta,
@@ -69,6 +157,50 @@ const server = http.createServer(async (request, response) => {
         })
       } finally {
         collecting = false
+      }
+    }
+
+    // ---- 草稿生命周期 drafts ----
+    if (url.pathname === '/api/drafts' && request.method === 'GET') {
+      const status = url.searchParams.get('status') || undefined
+      const drafts = await repo.list(status ? { status } : {})
+      return sendJson(response, { ok: true, drafts, statuses: DRAFT_STATUSES, labels: DRAFT_STATUS_LABELS })
+    }
+
+    if (url.pathname === '/api/drafts/sync' && request.method === 'POST') {
+      const body = await readJsonBody(request)
+      const records = Array.isArray(body.records) ? body.records : []
+      const merged = await repo.syncFromClient(records)
+      return sendJson(response, { ok: true, merged })
+    }
+
+    const draftMatch = url.pathname.match(/^\/api\/drafts\/([^/]+)(\/(transition|events))?$/)
+    if (draftMatch) {
+      const id = decodeURIComponent(draftMatch[1])
+      const sub = draftMatch[3]
+
+      if (!sub && request.method === 'GET') {
+        const draft = await repo.get(id)
+        if (!draft) return sendJson(response, { ok: false, message: 'draft not found' }, 404)
+        return sendJson(response, { ok: true, draft })
+      }
+
+      if (!sub && request.method === 'PATCH') {
+        const body = await readJsonBody(request)
+        const draft = await repo.patch(id, sanitizeDraftPatch(body))
+        if (!draft) return sendJson(response, { ok: false, message: 'draft not found' }, 404)
+        return sendJson(response, { ok: true, draft })
+      }
+
+      if (sub === 'transition' && request.method === 'POST') {
+        const body = await readJsonBody(request)
+        const result = await repo.transition(id, String(body.to || ''))
+        return sendJson(response, result.ok ? { ok: true, draft: result.draft } : { ok: false, reason: result.reason })
+      }
+
+      if (sub === 'events' && request.method === 'GET') {
+        const events = await repo.events(id)
+        return sendJson(response, { ok: true, events })
       }
     }
 
@@ -289,10 +421,23 @@ async function runRefresh() {
   return { collected, intelligence }
 }
 
-function sendJson(response, payload) {
-  response.writeHead(200, {
+function sendJson(response, payload, statusCode = 200) {
+  response.writeHead(statusCode, {
     'content-type': 'application/json;charset=utf-8',
     'cache-control': 'no-store'
   })
   response.end(JSON.stringify(payload))
+}
+
+// 只接受白名单字段；状态必须走 transition，不能从 PATCH 改。
+const DRAFT_PATCH_FIELDS = [
+  'draftTitle', 'draftBody', 'coverText', 'tags', 'privateMessageCta', 'coverStyle',
+  'quality', 'factCheck', 'assignee', 'reviewNote', 'publish', 'metrics', 'verification'
+]
+function sanitizeDraftPatch(body = {}) {
+  const patch = {}
+  for (const key of DRAFT_PATCH_FIELDS) {
+    if (body[key] !== undefined) patch[key] = body[key]
+  }
+  return patch
 }
