@@ -3,8 +3,10 @@ import {
   StudyAbroadMarketingAgent,
   buildIntelligence
 } from '../dist/agent/pipeline.mjs'
+import { generateOne, streamOne } from '../dist/agent/llm.mjs'
+import { factCheck } from '../dist/agent/factcheck.mjs'
 
-export { StudyAbroadMarketingAgent, buildIntelligence }
+export { StudyAbroadMarketingAgent, buildIntelligence, generateOne, streamOne, factCheck }
 
 if (import.meta.url === pathToFileURL(process.argv[1] || '').href) {
   buildIntelligence()

@@ -272,10 +272,29 @@
                     <button class="style-chip" type="button" data-cover-style="ai">AI 风格</button>
                   </div>
                   <p id="publishHint">包含：封面图 ×1、文案 txt、话题标签、核验记录。</p>
+                  <button class="btn-secondary compact" type="button" data-export-cover-png>🖼️ 导出封面 PNG</button>
                 </div>
               </div>
 
+              <div class="regen-block">
+                <div class="regen-row" data-regen-row>
+                  <span class="regen-label">AI 重写</span>
+                  <button class="btn-secondary compact" type="button" data-regen="new">🔄 再来一版</button>
+                  <button class="btn-secondary compact" type="button" data-regen="style">🎨 换风格</button>
+                  <button class="btn-secondary compact" type="button" data-regen="title">✏️ 只换标题</button>
+                  <button class="btn-secondary compact" type="button" data-regen="variants">🎲 多版生成</button>
+                  <button class="btn-ghost compact" type="button" data-regen-undo title="回到上一版" disabled>↩ 上一版</button>
+                  <span class="regen-style-tag" data-regen-style-tag></span>
+                </div>
+                <div class="gen-progress" data-gen-progress hidden>
+                  <div class="gen-progress-track"><div class="gen-progress-bar"></div></div>
+                  <span class="gen-progress-text" data-gen-progress-text></span>
+                </div>
+                <div class="quality-panel" data-quality-panel></div>
+              </div>
+
               <div class="button-row">
+                <button class="btn-ghost compact" type="button" data-copy-clean>📋 纯净复制</button>
                 <button class="btn-secondary" id="copyButton" type="button">
                   <svg viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M8 8h10v12H8V8Z" />
@@ -343,7 +362,24 @@
                   </div>
                 </div>
                 <div class="creation-cta-panel" id="creationCtaPanel"></div>
+                <div class="regen-block">
+                  <div class="regen-row" data-regen-row>
+                    <span class="regen-label">AI 重写</span>
+                    <button class="btn-secondary compact" type="button" data-regen="new">🔄 再来一版</button>
+                    <button class="btn-secondary compact" type="button" data-regen="style">🎨 换风格</button>
+                    <button class="btn-secondary compact" type="button" data-regen="title">✏️ 只换标题</button>
+                    <button class="btn-secondary compact" type="button" data-regen="variants">🎲 多版生成</button>
+                    <button class="btn-ghost compact" type="button" data-regen-undo title="回到上一版" disabled>↩ 上一版</button>
+                    <span class="regen-style-tag" data-regen-style-tag></span>
+                  </div>
+                  <div class="gen-progress" data-gen-progress hidden>
+                    <div class="gen-progress-track"><div class="gen-progress-bar"></div></div>
+                    <span class="gen-progress-text" data-gen-progress-text></span>
+                  </div>
+                  <div class="quality-panel" data-quality-panel></div>
+                </div>
                 <div class="button-row creation-actions">
+                  <button class="btn-ghost compact" type="button" data-copy-clean>📋 纯净复制</button>
                   <button class="btn-secondary compact" type="button" id="creationCopyButton">复制文案</button>
                   <button class="btn-primary compact" type="button" id="creationExportButton">导出发布包</button>
                 </div>
@@ -372,6 +408,7 @@
                   <button class="style-chip" type="button" data-creation-cover-style="ai">AI 风格</button>
                 </div>
                 <div class="cover-action-row">
+                  <button class="btn-primary compact" type="button" data-export-cover-png>🖼️ 导出封面 PNG</button>
                   <button class="btn-secondary compact" type="button" id="copyCoverAssetButton">复制图片/提示</button>
                   <button class="btn-ghost compact" type="button" id="exportCoverBriefButton">导出封面 brief</button>
                 </div>
@@ -462,6 +499,17 @@
       </main>
 
       <div class="toast" id="toast" role="status" aria-live="polite">已复制</div>
+
+      <div class="variants-modal" id="variantsModal" hidden>
+        <div class="variants-backdrop" data-variants-close></div>
+        <div class="variants-dialog" role="dialog" aria-label="多版草稿挑选">
+          <div class="variants-head">
+            <h3>多版草稿 · 选一个应用</h3>
+            <button class="btn-ghost compact" type="button" data-variants-close>关闭</button>
+          </div>
+          <div class="variants-grid" id="variantsGrid"></div>
+        </div>
+      </div>
     </div>
 
     <script src="./app.js"></script>

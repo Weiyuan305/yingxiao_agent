@@ -4,7 +4,12 @@ import { cleanText, cleanTextBlock, formatDate, toTag, truncate, uniqueStrings }
 
 type Topic = '签证政策' | '奖学金' | '申请数据' | '申请信息' | '院校动态' | '新闻趋势'
 
-export function generateWithRules(item: SourceItem): GeneratedDraft {
+export interface RulesOptions {
+  variantSeed?: string
+}
+
+export function generateWithRules(item: SourceItem, opts: RulesOptions = {}): GeneratedDraft {
+  const seed = opts.variantSeed || ''
   const regionLabel = getRegionLabel(item.region)
   const sourceKind = item.trustLevel === 'official'
     ? '官方来源'
@@ -17,7 +22,7 @@ export function generateWithRules(item: SourceItem): GeneratedDraft {
   const marketing = buildMarketingProfile(item)
   const tags = buildTags(item, topic)
   const coverText = truncate(buildRuleCoverText(item, regionLabel, topic), 16)
-  const draftTitle = truncate(buildRuleTitle(item, regionLabel, topic), 28)
+  const draftTitle = truncate(buildRuleTitle(item, regionLabel, topic, seed), 28)
 
   return {
     summary,
@@ -34,7 +39,7 @@ export function generateWithRules(item: SourceItem): GeneratedDraft {
     ],
     tags,
     draftTitle,
-    draftBody: buildDraftBody(item, regionLabel, topic, marketing.privateMessageCta, marketing.reasons),
+    draftBody: buildDraftBody(item, regionLabel, topic, marketing.privateMessageCta, marketing.reasons, seed),
     coverText
   }
 }
@@ -72,53 +77,71 @@ export function inferTopic(item: SourceItem): Topic {
   return '新闻趋势'
 }
 
+const TOPIC_HOOKS: Record<Topic, string[]> = {
+  签证政策: ['先别急着焦虑⚠️ 这条签证信息跟你有关', '签证这事踩坑代价太大，先码住📌', '关于签证，网上二手攻略别全信👇'],
+  奖学金: ['钱能省一笔是一笔💰 这条先收藏', '奖学金别等别人发你才知道⏰', '冲奖学金的姐妹，这条别划走👇'],
+  申请数据: ['选校只看排名的，先停一下📊', '这组数据，比你想的更影响选校', '别用感觉申请，先看这条数据👇'],
+  申请信息: ['申请季最怕的就是漏时间⏰', '材料卡时间真的会翻车，先看这条', '这条申请信息，建议直接存起来📌'],
+  院校动态: ['按旧版准备材料的，赶紧看这条⚠️', '目标院校有更新，别用去年的攻略', '这所学校的要求变了，先确认👇'],
+  新闻趋势: ['这条留学热点，真正的影响在这', '别只看标题，重点在后面👇', '最近被问爆的这件事，说点人话']
+}
+
+function pickVariant<T>(options: T[], item: SourceItem, extraSeed = ''): T {
+  const seed = `${item.id || ''}${item.title || ''}${extraSeed}`
+  let hash = 0
+  for (let i = 0; i < seed.length; i += 1) hash = (hash * 31 + seed.charCodeAt(i)) >>> 0
+  return options[hash % options.length] ?? options[0] as T
+}
+
 function buildDraftBody(
   item: SourceItem,
   regionLabel: string,
   topic: Topic,
   privateMessageCta: string,
-  reasons: string[]
+  reasons: string[],
+  seed = ''
 ): string {
+  const hook = pickVariant(TOPIC_HOOKS[topic] || TOPIC_HOOKS.新闻趋势, item, seed)
   const sourceLine = item.trustLevel === 'social'
-    ? '这条来自社媒趋势观察，不能直接当成政策结论。'
-    : `这条来自 ${item.sourceName}，不是二手转述，适合做成可收藏的${topic}内容。`
-  const sourceSummary = truncate(item.summary || item.rawText || item.title, 180)
-  const safeReasons = reasons.length
-    ? reasons
-    : ['信息和申请时间线有关，适合做提醒型内容。']
+    ? `这条来自社媒讨论，先当趋势看，别直接当${regionLabel}政策结论。`
+    : `这条来自「${item.sourceName}」，不是二手转述，做成${topic}笔记很稳。`
+  const sourceSummary = truncate(item.summary || item.rawText || item.title, 160)
+  const safeReasons = reasons.length ? reasons : ['信息和你的申请时间线有关，适合做成提醒。']
   const checklist = buildTopicChecklist(topic, regionLabel)
+  const cta = privateMessageCta || `在准备${regionLabel}的姐妹，评论区扣个1，我看看人多不多~`
 
   return [
-    `${regionLabel}留学今天这条信息，建议先收藏。`,
+    hook,
     '',
     sourceLine,
-    `来源重点：${sourceSummary}`,
+    `📌 来源重点：${sourceSummary}`,
     '',
-    '为什么值得看：',
-    `1. ${safeReasons[0] || '信息与申请规划有关。'}`,
-    `2. ${safeReasons[1] || '适合用来核对申请材料、截止时间或政策适用对象。'}`,
-    '3. 信息来自官方/学校/可信来源，但发布前仍要打开原文确认。',
+    '为什么值得看👇',
+    `1️⃣ ${safeReasons[0] || '跟申请规划直接相关'}`,
+    `2️⃣ ${safeReasons[1] || '能用来核对材料、截止时间或适用对象'}`,
+    '3️⃣ 信息来自官方/学校来源，但发布前我都会回原文再确认一次',
     '',
-    '你现在先做 3 件事：',
-    `1. ${checklist[0] || '打开原文确认适用范围。'}`,
-    `2. ${checklist[1] || '把可能影响自己的材料和时间点标出来。'}`,
-    `3. ${checklist[2] || '必要时找顾问做人工复核。'}`,
+    '你现在该做这几件事✅',
+    `· ${checklist[0] || '打开原文确认适用范围'}`,
+    `· ${checklist[1] || '把会影响你的材料和时间点标出来'}`,
+    `· ${checklist[2] || '拿不准就找顾问人工复核'}`,
     '',
-    `适合人群：正在关注${regionLabel}申请、签证、选校或奖学金的同学。`,
-    privateMessageCta,
-    '',
-    '注意：这条不能写成录取保证、保签保证，也不要把个别页面信息扩大成所有学校政策。'
+    cta,
+    '（政策/录取/签证以官方原文为准，本文不构成任何结果承诺）'
   ].join('\n')
 }
 
-function buildRuleTitle(item: SourceItem, regionLabel: string, topic: Topic): string {
+function buildRuleTitle(item: SourceItem, regionLabel: string, topic: Topic, seed = ''): string {
   const entity = shortEntity(item)
-  if (topic === '申请数据') return `${entity}数据更新，选校别只看排名`
-  if (topic === '签证政策') return `${regionLabel}签证政策，别只看二手攻略`
-  if (topic === '奖学金') return `${regionLabel}奖学金信息，先看适用对象`
-  if (topic === '申请信息') return `${entity}申请页更新，材料要重查`
-  if (topic === '院校动态') return `${entity}国际生要求，别按旧版准备`
-  return `${regionLabel}留学热点，真正影响在这`
+  const titles: Record<Topic, string[]> = {
+    申请数据: [`${entity}数据更新，选校别只看排名📊`, `${regionLabel}申请数据出了，别凭感觉选校`],
+    签证政策: [`${regionLabel}签证别只看二手攻略⚠️`, `关于${regionLabel}签证，这几点先确认`],
+    奖学金: [`${regionLabel}奖学金，先看你够不够格💰`, `冲${regionLabel}奖学金，这条别错过`],
+    申请信息: [`${entity}申请更新，材料赶紧重查📌`, `${regionLabel}申请别漏时间，看这条`],
+    院校动态: [`${entity}要求变了，别按旧版准备⚠️`, `${entity}国际生要求更新，先确认`],
+    新闻趋势: [`${regionLabel}留学热点，真正影响在这`, `这条${regionLabel}留学消息，说点人话`]
+  }
+  return pickVariant(titles[topic] || titles.新闻趋势, item, seed)
 }
 
 function buildRuleCoverText(item: SourceItem, regionLabel: string, topic: Topic): string {

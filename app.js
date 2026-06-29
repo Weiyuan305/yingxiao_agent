@@ -173,11 +173,13 @@ let intelligenceItems = [...fallbackIntelligenceItems]
 let backupItems = []
 const competitorStorageKey = 'study-agent-competitor-notes'
 const draftOverridesStorageKey = 'study-agent-draft-overrides'
+const draftHistoryStorageKey = 'study-agent-draft-history'
 const verificationStorageKey = 'study-agent-verification-state'
 const publishPlanStorageKey = 'study-agent-publish-plan'
 const feedbackStorageKey = 'study-agent-feedback'
 let competitorNotes = loadCompetitorNotes()
 let draftOverrides = loadRecordStorage(draftOverridesStorageKey)
+let draftHistory = loadRecordStorage(draftHistoryStorageKey)
 let verificationState = loadRecordStorage(verificationStorageKey)
 let publishPlan = loadRecordStorage(publishPlanStorageKey)
 let feedbackState = loadRecordStorage(feedbackStorageKey)
@@ -206,7 +208,12 @@ const state = {
   selectedId: intelligenceItems[0].id,
   selectedRecommendationIds: new Set(),
   coverStyle: localStorage.getItem('study-agent-cover-style') || 'source',
-  sourceFilter: 'all'
+  sourceFilter: 'all',
+  rewriteStyle: localStorage.getItem('study-agent-rewrite-style') || 'default',
+  rewriteVariant: 0,
+  regenerating: false,
+  factChecks: {},
+  factCheckTimer: null
 }
 
 const coverStyleLabels = {
@@ -214,6 +221,15 @@ const coverStyleLabels = {
   chart: '数据图表',
   contrast: '强对比',
   ai: 'AI 风格'
+}
+
+const rewriteStyles = ['default', 'punchy', 'warm', 'pro', 'story']
+const rewriteStyleLabels = {
+  default: '学姐干货',
+  punchy: '爆款冲',
+  warm: '温柔共情',
+  pro: '专业稳重',
+  story: '故事代入'
 }
 
 const recommendationMin = 3
@@ -1527,6 +1543,8 @@ function saveMainDraftFields() {
   updateCounts()
   applyCoverArt(coverArtEl, getSelectedItem())
   renderWorkflowStatus()
+  renderQualityPanels()
+  scheduleFactCheck()
 }
 
 function saveCreationDraftFields() {
@@ -1546,6 +1564,8 @@ function saveCreationDraftFields() {
     creationCoverSourceEl.textContent = `${coverAsset.label} · ${coverAsset.note}`
   }
   renderWorkflowStatus()
+  renderQualityPanels()
+  scheduleFactCheck()
 }
 
 function setFilter(filter) {
@@ -1606,6 +1626,7 @@ function buildDraftText() {
 }
 
 async function copyDraft() {
+  if (!ensureCompliant()) return
   const text = buildDraftText()
   try {
     await navigator.clipboard.writeText(text)
@@ -1616,6 +1637,7 @@ async function copyDraft() {
 }
 
 function exportPack() {
+  if (!ensureCompliant()) return
   const item = getSelectedItem()
   const content = buildDraftText()
   const file = new Blob([content], { type: 'text/plain;charset=utf-8' })
@@ -1682,6 +1704,623 @@ function showToast(message) {
   showToast.timer = setTimeout(() => toastEl.classList.remove('show'), 1800)
 }
 
+// ---- AI 重写（单篇即时生成）----
+function updateRegenStyleTag() {
+  const label = rewriteStyleLabels[state.rewriteStyle] || state.rewriteStyle
+  document.querySelectorAll('[data-regen-style-tag]').forEach(el => {
+    el.textContent = `风格：${label}`
+  })
+}
+
+function setRegenBusy(busy) {
+  state.regenerating = busy
+  document.querySelectorAll('[data-regen], [data-regen-undo], [data-quality-fix]')
+    .forEach(button => { button.disabled = busy })
+  document.querySelectorAll('[data-regen-row]').forEach(row => row.classList.toggle('busy', busy))
+  if (!busy) updateUndoButtons()
+}
+
+// 生成进度（重写约 26 秒，给可见进度而不是只有一个 toast）
+function startGenProgress(label) {
+  state.genStart = Date.now()
+  document.querySelectorAll('[data-gen-progress]').forEach(el => { el.hidden = false })
+  const tick = () => {
+    const seconds = Math.round((Date.now() - state.genStart) / 1000)
+    document.querySelectorAll('[data-gen-progress-text]').forEach(el => {
+      el.textContent = `${label}… ${seconds}s`
+    })
+  }
+  tick()
+  clearInterval(state.genTimer)
+  state.genTimer = setInterval(tick, 1000)
+}
+
+function stopGenProgress() {
+  clearInterval(state.genTimer)
+  document.querySelectorAll('[data-gen-progress]').forEach(el => { el.hidden = true })
+}
+
+function buildPayloadItem(item) {
+  return {
+    id: item.id,
+    title: item.title,
+    source: item.source,
+    sourceUrl: item.sourceUrl,
+    sourceType: item.sourceType,
+    sourceId: item.sourceId,
+    sourceTrustLevel: item.sourceTrustLevel,
+    region: item.region,
+    summary: item.summary
+  }
+}
+
+async function requestGenerate(extra) {
+  const item = getSelectedItem()
+  const response = await fetch('/api/generate', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    cache: 'no-store',
+    body: JSON.stringify({ id: item.id, item: buildPayloadItem(item), ...extra })
+  })
+  if (!response.ok) {
+    let detail = ''
+    try { const body = await response.json(); detail = body.message || body.code || '' } catch { /* ignore */ }
+    throw new Error(`服务 ${response.status}${detail ? ' · ' + detail : ''}（需先 npm run serve 并配置模型 Key）`)
+  }
+  const payload = await response.json()
+  if (!payload.ok) throw new Error(payload.message || '生成失败')
+  return payload
+}
+
+function draftPatchFromDraft(draft, mode) {
+  const patch = {}
+  if (draft.draftTitle) patch.draftTitle = draft.draftTitle
+  if (draft.coverText) patch.coverText = draft.coverText
+  if (mode !== 'title') {
+    if (draft.draftBody) patch.draftBody = draft.draftBody
+    if (Array.isArray(draft.tags) && draft.tags.length) patch.tags = draft.tags
+  }
+  return patch
+}
+
+// 流式生成中，把正文增量实时写进两个编辑器（不落库，done 时再统一持久化）
+function setLiveBody(text) {
+  if (draftBodyEl) draftBodyEl.value = text
+  if (creationDraftBodyEl) creationDraftBodyEl.value = text
+  updateCounts()
+  updateCreationCounts()
+  ;[draftBodyEl, creationDraftBodyEl].forEach(el => { if (el) el.scrollTop = el.scrollHeight })
+}
+
+// SSE 流式生成；逐段回调正文，done 时返回 { draft, source, factCheck }，失败抛错。
+async function streamGenerate(extra, onBody) {
+  const item = getSelectedItem()
+  const response = await fetch('/api/generate/stream', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    cache: 'no-store',
+    body: JSON.stringify({ id: item.id, item: buildPayloadItem(item), ...extra })
+  })
+  if (!response.ok || !response.body) throw new Error(`stream ${response.status}`)
+  const reader = response.body.getReader()
+  const decoder = new TextDecoder()
+  let buffer = ''
+  let result = null
+  let errMessage = null
+  for (;;) {
+    const { value, done } = await reader.read()
+    if (done) break
+    buffer += decoder.decode(value, { stream: true })
+    const lines = buffer.split('\n')
+    buffer = lines.pop() || ''
+    for (const line of lines) {
+      const trimmed = line.trim()
+      if (!trimmed.startsWith('data:')) continue
+      const data = trimmed.slice(5).trim()
+      if (!data) continue
+      let msg
+      try { msg = JSON.parse(data) } catch { continue }
+      if (msg.type === 'delta') onBody(String(msg.body || ''))
+      else if (msg.type === 'done') result = msg
+      else if (msg.type === 'error') errMessage = msg.message || 'stream error'
+    }
+  }
+  if (errMessage) throw new Error(errMessage)
+  if (!result || !result.draft) throw new Error('stream incomplete')
+  return result
+}
+
+// full 模式优先走流式（边写边出字）；流式不可用时回退非流式。
+async function generateFull(extra, onBody) {
+  try {
+    return await streamGenerate(extra, onBody)
+  } catch (error) {
+    return await requestGenerate({ mode: 'full', ...extra })
+  }
+}
+
+// 数字核对：对编辑后的正文重新校验（debounce），结果回填 state.factChecks 并刷新质检面板
+function scheduleFactCheck() {
+  clearTimeout(state.factCheckTimer)
+  state.factCheckTimer = setTimeout(runFactCheck, 700)
+}
+
+async function runFactCheck() {
+  const item = getSelectedItem()
+  if (!item) return
+  const body = String(item.draftBody || '')
+  if (!body) return
+  try {
+    const response = await fetch('/api/factcheck', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      cache: 'no-store',
+      body: JSON.stringify({ id: item.id, item: buildPayloadItem(item), draftBody: body })
+    })
+    if (!response.ok) return
+    const payload = await response.json()
+    if (payload.ok && payload.factCheck) {
+      state.factChecks[item.id] = payload.factCheck
+      renderQualityPanels()
+    }
+  } catch {
+    /* 静态模式无服务端，忽略 */
+  }
+}
+
+async function regenerateDraft(mode) {
+  if (state.regenerating) return
+  const item = getSelectedItem()
+  if (!item) return
+
+  if (mode === 'style') {
+    const index = rewriteStyles.indexOf(state.rewriteStyle)
+    state.rewriteStyle = rewriteStyles[(index + 1) % rewriteStyles.length]
+    localStorage.setItem('study-agent-rewrite-style', state.rewriteStyle)
+    updateRegenStyleTag()
+  }
+  state.rewriteVariant += 1
+
+  const requestMode = mode === 'title' ? 'title' : 'full'
+  const styleLabel = rewriteStyleLabels[state.rewriteStyle] || state.rewriteStyle
+  setRegenBusy(true)
+  startGenProgress(requestMode === 'title' ? '正在换标题' : `正在用「${styleLabel}」风格生成`)
+
+  try {
+    pushHistory(item.id, snapshotItem(item))
+    const payload = requestMode === 'full'
+      ? await generateFull({ style: state.rewriteStyle, variant: state.rewriteVariant }, setLiveBody)
+      : await requestGenerate({ mode: requestMode, style: state.rewriteStyle, variant: state.rewriteVariant })
+    const patch = draftPatchFromDraft(payload.draft || {}, requestMode)
+    if (!Object.keys(patch).length) throw new Error('空结果')
+
+    updateDraftOverride(item.id, patch)
+    if (payload.factCheck) state.factChecks[item.id] = payload.factCheck
+    render()
+    if (payload.source !== 'llm' && payload.warning) {
+      showToast(`模型失败已兜底：${String(payload.warning).slice(0, 40)}`)
+    } else {
+      const src = payload.source === 'llm' ? '模型' : '规则兜底'
+      showToast(requestMode === 'title' ? `标题已更新（${src}）` : `已重写（${src} · ${styleLabel}）`)
+    }
+  } catch (error) {
+    popHistory(item.id) // 回滚刚压入的快照，避免脏历史
+    showToast(`重写失败：${error.message}`)
+  } finally {
+    stopGenProgress()
+    setRegenBusy(false)
+  }
+}
+
+// ---- 质量自检 ----
+// 违禁承诺词：只在“博主主动承诺”时拦截；带否定/劝退语境（不是/别信/避免保录套路）不算，避免误伤
+const QUALITY_FORBIDDEN_LIST = [
+  '保证录取', '保证过签', '保证拿到', '保证入学', '包过', '包录取', '包录', '包签证', '包签',
+  '100%录取', '100%过签', '100%上岸', '百分百录取', '百分百过签',
+  '一定能录取', '一定能过签', '一定能上岸', '一定能拿到', '确保录取', '确保过签', '确保入学',
+  '绝对录取', '绝对能上', '稳过', '必过', '保录', '保签', '稳拿offer', '稳拿录取'
+]
+const QUALITY_NEGATION_RE = /(不|别|非|拒|避免|警惕|杜绝|不要|不是|没有|不能|远离|当心|小心|警示|劝退)/
+const QUALITY_CTA_RE = /(评论区|评论|扣个|扣“|扣1|码住|收藏|点赞|留言|蹲|私信|dd)/
+const QUALITY_DISCLAIMER_RE = /(以官方|为准|不承诺|官方原文)/
+
+function findForbiddenPromise(text) {
+  const value = String(text || '')
+  for (const word of QUALITY_FORBIDDEN_LIST) {
+    let index = value.indexOf(word)
+    while (index !== -1) {
+      const before = value.slice(Math.max(0, index - 6), index)
+      if (!QUALITY_NEGATION_RE.test(before)) return word
+      index = value.indexOf(word, index + word.length)
+    }
+  }
+  return null
+}
+
+function countEmoji(value) {
+  const matched = String(value || '').match(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2190}-\u{21FF}\u{2B00}-\u{2BFF}\u{2139}\u{FE0F}\u{1F1E6}-\u{1F1FF}]/gu)
+  return matched ? matched.length : 0
+}
+
+// 数字核对行：依据后端 /api/factcheck 的结果。来源里查不到的数字标黄（不拦截发布，提示人工核对）
+function factCheckRow(item) {
+  const fact = state.factChecks[item.id]
+  if (!fact) {
+    return { key: 'facts', level: 'warn', ok: true, label: '数字核对', detail: '未校验（重写或编辑后自动核对）' }
+  }
+  if (fact.flagged && fact.flagged.length) {
+    const values = fact.flagged.map(flag => flag.value).join('、')
+    return { key: 'facts', level: 'warn', ok: false, label: '数字核对', detail: `${fact.flagged.length} 处来源查不到：${values}` }
+  }
+  return {
+    key: 'facts',
+    level: 'warn',
+    ok: true,
+    label: '数字核对',
+    detail: fact.checked ? `${fact.checked} 个数字都能在来源找到` : '正文无高风险数字'
+  }
+}
+
+function assessQuality(item) {
+  const title = String(item.draftTitle || '')
+  const body = String(item.draftBody || '')
+  const tags = Array.isArray(item.tags) ? item.tags : []
+  const firstLine = (body.split('\n').find(line => line.trim()) || '').trim()
+  const forbidden = findForbiddenPromise(title + body)
+  const emoji = countEmoji(body)
+  const checks = [
+    { key: 'compliance', level: 'error', ok: !forbidden, label: '合规红线', detail: forbidden ? `出现违禁承诺词「${forbidden}」` : '无录取/签证保证性措辞' },
+    { key: 'titleLen', level: 'warn', ok: title.length > 0 && title.length <= 24, label: '标题长度', detail: `${title.length} 字（建议 ≤20）` },
+    { key: 'bodyLen', level: 'warn', ok: body.length >= 120 && body.length <= 800, label: '正文篇幅', detail: `${body.length} 字（建议 150~600）` },
+    { key: 'emoji', level: 'warn', ok: emoji >= 2, label: 'emoji 分段', detail: `${emoji} 个` },
+    { key: 'hook', level: 'warn', ok: firstLine.length > 0 && firstLine.length <= 30, label: '开场钩子', detail: firstLine.length && firstLine.length <= 30 ? '开头够短够抓人' : '开头偏长，钩子不够' },
+    { key: 'cta', level: 'warn', ok: QUALITY_CTA_RE.test(body), label: '互动引导', detail: QUALITY_CTA_RE.test(body) ? '有结尾 CTA' : '缺结尾互动' },
+    { key: 'disclaimer', level: 'warn', ok: QUALITY_DISCLAIMER_RE.test(body), label: '合规提示', detail: QUALITY_DISCLAIMER_RE.test(body) ? '有“以官方为准”提示' : '缺合规小尾巴' },
+    { key: 'tags', level: 'warn', ok: tags.length >= 3 && tags.length <= 8, label: '标签数量', detail: `${tags.length} 个（建议 5~8）` },
+    factCheckRow(item)
+  ]
+  const errors = checks.filter(check => !check.ok && check.level === 'error').length
+  const warns = checks.filter(check => !check.ok && check.level === 'warn').length
+  return { score: Math.max(0, 100 - 25 * errors - 8 * warns), passed: errors === 0, errors, warns, checks }
+}
+
+const QUALITY_FIX_HINTS = {
+  compliance: '删除所有“保证录取/包过/100%/一定能”等承诺性措辞，改成客观、以官方为准的表述',
+  titleLen: '把标题压到20字以内',
+  bodyLen: '把正文篇幅调整到 150~600 字之间',
+  emoji: '正文用 emoji 起头分点，至少 2 处',
+  hook: '开头第一句换成更短、更戳痛点的钩子',
+  cta: '结尾加一句互动引导（如“评论区扣1 / 觉得有用先码住”）',
+  disclaimer: '结尾补一句合规提示（以官方为准、不承诺录取或签证结果）',
+  tags: '话题标签控制在 5~8 个',
+  facts: '正文里出现的百分比/年份/金额/排名/名额，凡是来源原文里没有的，一律删掉或改成来源里真实存在的数字，不要编造'
+}
+
+function qualityIssuesForFix(report) {
+  return report.checks.filter(check => !check.ok).map(check => QUALITY_FIX_HINTS[check.key]).filter(Boolean)
+}
+
+function qualityPanelHtml(report) {
+  const tone = report.errors ? 'bad' : (report.warns ? 'warn' : 'good')
+  const badge = report.errors
+    ? '⛔ 合规未过'
+    : (report.warns ? `${report.score} 分 · ${report.warns} 项可优化` : `${report.score} 分 · 优秀`)
+  const items = report.checks.map(check => {
+    const icon = check.ok ? '✓' : (check.level === 'error' ? '✕' : '⚠')
+    const cls = check.ok ? 'ok' : check.level
+    return `<li class="qc-${cls}"><span class="qc-icon">${icon}</span><span class="qc-label">${escapeHtml(check.label)}</span><em>${escapeHtml(check.detail)}</em></li>`
+  }).join('')
+  const fixBtn = (report.errors || report.warns)
+    ? '<button class="btn-secondary compact" type="button" data-quality-fix>🩹 一键修正</button>'
+    : ''
+  return `<div class="quality-head qc-${tone}"><strong>质检 ${escapeHtml(badge)}</strong>${fixBtn}</div><ul class="quality-list">${items}</ul>`
+}
+
+function renderQualityPanels() {
+  const item = getSelectedItem()
+  if (!item) return
+  const html = qualityPanelHtml(assessQuality(item))
+  document.querySelectorAll('[data-quality-panel]').forEach(el => { el.innerHTML = html })
+  // 首次查看某条草稿且还没核对过时，自动跑一次数字核对（debounce 合并重复 render）
+  if (!state.factChecks[item.id] && String(item.draftBody || '')) scheduleFactCheck()
+}
+
+function ensureCompliant() {
+  const item = getSelectedItem()
+  if (!item) return false
+  if (assessQuality(item).passed) return true
+  showToast('有合规红线未通过，请先点「🩹 一键修正」')
+  return false
+}
+
+async function fixDraft() {
+  if (state.regenerating) return
+  const item = getSelectedItem()
+  if (!item) return
+  const fixes = qualityIssuesForFix(assessQuality(item))
+  if (!fixes.length) { showToast('当前没有需要修正的项'); return }
+
+  state.rewriteVariant += 1
+  setRegenBusy(true)
+  startGenProgress('正在按质检定向修正')
+  try {
+    pushHistory(item.id, snapshotItem(item))
+    const payload = await generateFull({ style: state.rewriteStyle, variant: state.rewriteVariant, fix: fixes }, setLiveBody)
+    const patch = draftPatchFromDraft(payload.draft || {}, 'full')
+    if (!Object.keys(patch).length) throw new Error('空结果')
+    updateDraftOverride(item.id, patch)
+    if (payload.factCheck) state.factChecks[item.id] = payload.factCheck
+    render()
+    const after = assessQuality(getSelectedItem())
+    showToast(after.passed ? `已修正 · 质检 ${after.score} 分` : `已修正，仍有 ${after.errors + after.warns} 项待看`)
+  } catch (error) {
+    popHistory(item.id)
+    showToast(`修正失败：${error.message}`)
+  } finally {
+    stopGenProgress()
+    setRegenBusy(false)
+  }
+}
+
+// ---- 历史版本 / 回退 ----
+function snapshotItem(item) {
+  return {
+    draftTitle: item.draftTitle,
+    draftBody: item.draftBody,
+    coverText: item.coverText,
+    privateMessageCta: item.privateMessageCta,
+    tags: Array.isArray(item.tags) ? [...item.tags] : []
+  }
+}
+
+function historyCount(id) {
+  return Array.isArray(draftHistory[id]) ? draftHistory[id].length : 0
+}
+
+function pushHistory(id, snapshot) {
+  if (!id) return
+  const list = Array.isArray(draftHistory[id]) ? draftHistory[id] : []
+  draftHistory[id] = [...list, snapshot].slice(-10)
+  saveRecordStorage(draftHistoryStorageKey, draftHistory)
+}
+
+function popHistory(id) {
+  const list = Array.isArray(draftHistory[id]) ? draftHistory[id] : []
+  if (!list.length) return null
+  const snapshot = list[list.length - 1]
+  draftHistory[id] = list.slice(0, -1)
+  saveRecordStorage(draftHistoryStorageKey, draftHistory)
+  return snapshot
+}
+
+function updateUndoButtons() {
+  const id = getSelectedItem()?.id
+  const count = id ? historyCount(id) : 0
+  document.querySelectorAll('[data-regen-undo]').forEach(button => {
+    button.disabled = count === 0 || state.regenerating
+    button.textContent = `↩ 上一版${count ? ` (${count})` : ''}`
+  })
+}
+
+function undoDraft() {
+  const item = getSelectedItem()
+  if (!item) return
+  const snapshot = popHistory(item.id)
+  if (!snapshot) { showToast('没有更早的版本了'); return }
+  updateDraftOverride(item.id, snapshot)
+  render()
+  showToast('已回到上一版')
+}
+
+// ---- 一稿多版挑选 ----
+let currentVariants = []
+
+async function generateVariants() {
+  if (state.regenerating) return
+  const item = getSelectedItem()
+  if (!item) return
+  setRegenBusy(true)
+  startGenProgress('正在并行生成 3 版')
+  try {
+    const payload = await requestGenerate({ mode: 'full', count: 3 })
+    const variants = payload.variants || []
+    if (!variants.length) throw new Error('无结果')
+    currentVariants = variants
+    openVariantsModal(variants)
+  } catch (error) {
+    showToast(`多版生成失败：${error.message}`)
+  } finally {
+    stopGenProgress()
+    setRegenBusy(false)
+  }
+}
+
+function openVariantsModal(variants) {
+  const grid = document.querySelector('#variantsGrid')
+  if (grid) {
+    grid.innerHTML = variants.map((variant, index) => {
+      const draft = variant.draft || {}
+      const report = assessQuality(draft)
+      const styleLabel = rewriteStyleLabels[variant.style] || variant.style || ''
+      const preview = String(draft.draftBody || '').slice(0, 90)
+      const tone = report.errors ? 'bad' : (report.warns ? 'warn' : 'good')
+      return `
+        <div class="variant-card">
+          <div class="variant-meta">
+            <span class="variant-style">${escapeHtml(styleLabel)}</span>
+            <span class="variant-score qc-${tone}">质检 ${report.errors ? '⛔' : report.score + '分'}</span>
+          </div>
+          <h4>${escapeHtml(draft.draftTitle || '（无标题）')}</h4>
+          <p class="variant-preview">${escapeHtml(preview)}…</p>
+          <button class="btn-primary compact" type="button" data-variant-index="${index}">应用这版</button>
+        </div>`
+    }).join('')
+  }
+  const modal = document.querySelector('#variantsModal')
+  if (modal) modal.hidden = false
+}
+
+function closeVariantsModal() {
+  const modal = document.querySelector('#variantsModal')
+  if (modal) modal.hidden = true
+}
+
+function applyVariant(index) {
+  const variant = currentVariants[index]
+  if (!variant) return
+  const item = getSelectedItem()
+  if (!item) return
+  pushHistory(item.id, snapshotItem(item))
+  updateDraftOverride(item.id, draftPatchFromDraft(variant.draft || {}, 'full'))
+  if (variant.factCheck) state.factChecks[item.id] = variant.factCheck
+  closeVariantsModal()
+  render()
+  showToast(`已应用第 ${index + 1} 版`)
+}
+
+// ---- 纯净复制（只输出 标题 + 正文 + 标签）----
+async function copyCleanDraft() {
+  if (!ensureCompliant()) return
+  const item = getSelectedItem()
+  const tags = item.tags.map(tag => `#${tag}`).join(' ')
+  const text = [item.draftTitle, '', item.draftBody, '', tags].join('\n')
+  try {
+    await navigator.clipboard.writeText(text)
+    showToast('纯净正文已复制（标题+正文+标签）')
+  } catch {
+    showToast('当前浏览器不支持直接复制')
+  }
+}
+
+// ---- 信息图封面一键导出 PNG（小红书 3:4，1080×1440）----
+const coverRegionPalettes = {
+  HK: { bg: ['#0f172a', '#7f1d1d'], accent: '#f59e0b', label: '香港' },
+  UK: { bg: ['#0b1437', '#1e3a8a'], accent: '#38bdf8', label: '英国' },
+  SG: { bg: ['#0f172a', '#0f766e'], accent: '#fca5a5', label: '新加坡' }
+}
+const coverStylePalettes = {
+  chart: { bg: ['#0b132b', '#1c3d5a'], accent: '#22d3ee' },
+  contrast: { bg: ['#1a0306', '#7f1d1d'], accent: '#fde047' },
+  ai: { bg: ['#1e1b4b', '#4c1d95'], accent: '#f0abfc' }
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath()
+  ctx.moveTo(x + r, y)
+  ctx.arcTo(x + w, y, x + w, y + h, r)
+  ctx.arcTo(x + w, y + h, x, y + h, r)
+  ctx.arcTo(x, y + h, x, y, r)
+  ctx.arcTo(x, y, x + w, y, r)
+  ctx.closePath()
+}
+
+function wrapByWidth(ctx, text, maxWidth) {
+  const lines = []
+  let line = ''
+  for (const ch of String(text || '')) {
+    if (ch === '\n') { lines.push(line); line = ''; continue }
+    const test = line + ch
+    if (ctx.measureText(test).width > maxWidth && line) {
+      lines.push(line)
+      line = ch
+    } else {
+      line = test
+    }
+  }
+  if (line) lines.push(line)
+  return lines
+}
+
+function exportCoverPng() {
+  if (!ensureCompliant()) return
+  const item = getSelectedItem()
+  if (!item) return
+  const W = 1080
+  const H = 1440
+  const canvas = document.createElement('canvas')
+  canvas.width = W
+  canvas.height = H
+  const ctx = canvas.getContext('2d')
+  const region = coverRegionPalettes[item.region] || coverRegionPalettes.UK
+  const stylePal = coverStylePalettes[state.coverStyle]
+  const bg = (stylePal && stylePal.bg) || region.bg
+  const accent = (stylePal && stylePal.accent) || region.accent
+  const fontStack = '"PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", sans-serif'
+
+  const grad = ctx.createLinearGradient(0, 0, W, H)
+  grad.addColorStop(0, bg[0])
+  grad.addColorStop(1, bg[1])
+  ctx.fillStyle = grad
+  ctx.fillRect(0, 0, W, H)
+
+  ctx.globalAlpha = 0.16
+  ctx.fillStyle = accent
+  ctx.beginPath(); ctx.arc(W * 0.86, H * 0.12, 230, 0, Math.PI * 2); ctx.fill()
+  ctx.beginPath(); ctx.arc(W * 0.08, H * 0.94, 280, 0, Math.PI * 2); ctx.fill()
+  ctx.globalAlpha = 1
+
+  // 顶部地区/风格胶囊
+  const chipText = `${region.label || item.regionLabel || ''} · ${coverStyleLabels[state.coverStyle] || ''}`
+  ctx.font = `600 36px ${fontStack}`
+  ctx.textBaseline = 'middle'
+  const chipW = ctx.measureText(chipText).width + 64
+  ctx.fillStyle = 'rgba(255,255,255,0.16)'
+  roundRect(ctx, 80, 108, chipW, 76, 38)
+  ctx.fill()
+  ctx.fillStyle = '#fff'
+  ctx.fillText(chipText, 112, 148)
+
+  // 强调短条
+  ctx.fillStyle = accent
+  roundRect(ctx, 80, 372, 132, 18, 9)
+  ctx.fill()
+
+  // 封面大字
+  const coverText = (item.coverText || item.draftTitle || '留学干货').slice(0, 24)
+  ctx.fillStyle = '#ffffff'
+  ctx.textBaseline = 'top'
+  const bigFont = coverText.length > 8 ? 92 : 108
+  ctx.font = `800 ${bigFont}px ${fontStack}`
+  const bigLines = wrapByWidth(ctx, coverText, W - 160).slice(0, 4)
+  let cy = 432
+  const bigLh = bigFont + 22
+  for (const line of bigLines) {
+    ctx.fillText(line, 80, cy)
+    cy += bigLh
+  }
+
+  // 副标题（完整标题）
+  ctx.fillStyle = 'rgba(255,255,255,0.86)'
+  ctx.font = `500 42px ${fontStack}`
+  const subLines = wrapByWidth(ctx, item.draftTitle || '', W - 160).slice(0, 3)
+  let sy = Math.max(cy + 40, H - 380)
+  for (const line of subLines) {
+    ctx.fillText(line, 80, sy)
+    sy += 58
+  }
+
+  // 底部水印
+  ctx.fillStyle = 'rgba(255,255,255,0.72)'
+  ctx.font = `400 30px ${fontStack}`
+  ctx.fillText(`来源：${String(item.source || '').slice(0, 26)}`, 80, H - 152)
+  ctx.fillStyle = accent
+  ctx.font = `700 32px ${fontStack}`
+  ctx.fillText('留学情报 · 内容仅供参考，以官方为准', 80, H - 104)
+
+  canvas.toBlob(blob => {
+    if (!blob) { showToast('封面导出失败'); return }
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `${String(item.region || 'xhs').toLowerCase()}-cover-${item.id}.png`
+    document.body.append(link)
+    link.click()
+    link.remove()
+    URL.revokeObjectURL(url)
+    showToast('封面 PNG 已导出')
+  }, 'image/png')
+}
+
 function render() {
   updateIntegrationStatus()
   updateStats()
@@ -1696,6 +2335,9 @@ function render() {
   renderPublish()
   renderSources()
   renderCompetitors()
+  renderQualityPanels()
+  updateUndoButtons()
+  updateRegenStyleTag()
 }
 
 async function refreshData() {
@@ -1760,6 +2402,23 @@ document.querySelector('#creationCopyButton')?.addEventListener('click', copyDra
 document.querySelector('#creationExportButton')?.addEventListener('click', exportPack)
 document.querySelector('#copyCoverAssetButton')?.addEventListener('click', copyCoverAsset)
 document.querySelector('#exportCoverBriefButton')?.addEventListener('click', exportCoverBrief)
+document.addEventListener('click', event => {
+  const regenButton = event.target.closest('[data-regen]')
+  if (regenButton) {
+    if (regenButton.dataset.regen === 'variants') generateVariants()
+    else regenerateDraft(regenButton.dataset.regen)
+    return
+  }
+  if (event.target.closest('[data-regen-undo]')) { undoDraft(); return }
+  if (event.target.closest('[data-quality-fix]')) { fixDraft(); return }
+  if (event.target.closest('[data-copy-clean]')) { copyCleanDraft(); return }
+  if (event.target.closest('[data-variants-close]')) { closeVariantsModal(); return }
+  const variantButton = event.target.closest('[data-variant-index]')
+  if (variantButton) { applyVariant(Number(variantButton.dataset.variantIndex)); return }
+  const pngButton = event.target.closest('[data-export-cover-png]')
+  if (pngButton) exportCoverPng()
+})
+updateRegenStyleTag()
 document.querySelector('#refreshButton').addEventListener('click', refreshData)
 document.querySelector('#jumpDraftButton').addEventListener('click', () => setView('intelligence'))
 document.querySelector('#testSourcesButton').addEventListener('click', async () => {
