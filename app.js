@@ -1,3 +1,25 @@
+// ---- API 访问令牌网关（在任何 fetch 之前安装）----
+const API_TOKEN_KEY = 'study-agent-token'
+function getApiToken() {
+  try { return localStorage.getItem(API_TOKEN_KEY) || '' } catch { return '' }
+}
+const _nativeFetch = window.fetch.bind(window)
+window.fetch = (input, init = {}) => {
+  const urlStr = typeof input === 'string' ? input : (input && input.url) || ''
+  const isApi = urlStr.includes('/api/')
+  let options = init
+  if (isApi) {
+    const token = getApiToken()
+    const headers = new Headers((init && init.headers) || (typeof input !== 'string' && input ? input.headers : undefined) || {})
+    if (token) headers.set('x-app-token', token)
+    options = { ...init, headers }
+  }
+  return _nativeFetch(input, options).then(response => {
+    if (isApi && response.status === 401 && typeof onAuthChallenge === 'function') onAuthChallenge()
+    return response
+  })
+}
+
 const fallbackIntelligenceItems = [
   {
     id: 'hk-ai-business',
@@ -341,6 +363,128 @@ function saveRecordStorage(key, value) {
   localStorage.setItem(key, JSON.stringify(value))
 }
 
+// ---- 服务端草稿仓库客户端 ----
+// 策略：本地 localStorage 仍是即时真相（同步读写不变）；写操作 debounce 镜像到服务端；
+// 加载时从服务端水合本地缓存。服务端不可用（静态模式）时全部静默回退，应用照常。
+const draftServer = {
+  available: false,
+  drafts: {},              // id -> 服务端 draft 快照（含 status/quality/factCheck 等）
+  statuses: [],
+  labels: {},
+  _patchTimers: {},
+  _pending: {},
+
+  async hydrate() {
+    try {
+      const response = await fetch('/api/drafts', { cache: 'no-store' })
+      if (!response.ok) throw new Error(String(response.status))
+      const payload = await response.json()
+      if (!payload.ok) throw new Error('not ok')
+      this.available = true
+      this.statuses = payload.statuses || []
+      this.labels = payload.labels || {}
+      this.drafts = {}
+      for (const draft of payload.drafts || []) {
+        this.drafts[draft.id] = draft
+        hydrateLocalFromDraft(draft)
+      }
+      return true
+    } catch {
+      this.available = false
+      return false
+    }
+  },
+
+  // debounce 合并同一 id 的字段写入，fire-and-forget。
+  patch(id, fields) {
+    if (!this.available || !id) return
+    this._pending[id] = { ...(this._pending[id] || {}), ...fields }
+    clearTimeout(this._patchTimers[id])
+    this._patchTimers[id] = setTimeout(async () => {
+      const body = this._pending[id]
+      delete this._pending[id]
+      try {
+        const response = await fetch(`/api/drafts/${encodeURIComponent(id)}`, {
+          method: 'PATCH',
+          headers: { 'content-type': 'application/json' },
+          cache: 'no-store',
+          body: JSON.stringify(body)
+        })
+        if (response.ok) {
+          const payload = await response.json()
+          if (payload.ok && payload.draft) this.drafts[id] = payload.draft
+        }
+      } catch { /* 静态模式忽略 */ }
+    }, 500)
+  },
+
+  async transition(id, to) {
+    try {
+      const response = await fetch(`/api/drafts/${encodeURIComponent(id)}/transition`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        cache: 'no-store',
+        body: JSON.stringify({ to })
+      })
+      const payload = await response.json()
+      if (payload.ok && payload.draft) this.drafts[id] = payload.draft
+      return payload
+    } catch {
+      return { ok: false, reason: '需要运行 npm run serve 才能流转状态' }
+    }
+  },
+
+  status(id) {
+    return this.drafts[id]?.status || (String(getWorkingItem(getBaseItemById(id) || { id }).draftBody || '') ? 'to_qc' : 'to_generate')
+  },
+
+  // 首次连上服务端时把既有 localStorage 数据一次性同步上去（幂等 + 标记）
+  async migrateOnce() {
+    if (!this.available) return
+    if (localStorage.getItem('study-agent-store-synced')) return
+    const ids = new Set([
+      ...Object.keys(draftOverrides), ...Object.keys(verificationState),
+      ...Object.keys(publishPlan), ...Object.keys(feedbackState)
+    ])
+    const records = [...ids].map(id => ({
+      id,
+      ...safeObject(draftOverrides[id]),
+      verification: safeObject(verificationState[id]),
+      publish: safeObject(publishPlan[id]),
+      metrics: safeObject(feedbackState[id])
+    }))
+    if (!records.length) { localStorage.setItem('study-agent-store-synced', '1'); return }
+    try {
+      const response = await fetch('/api/drafts/sync', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        cache: 'no-store',
+        body: JSON.stringify({ records })
+      })
+      if (response.ok) {
+        localStorage.setItem('study-agent-store-synced', '1')
+        await this.hydrate()
+      }
+    } catch { /* 忽略 */ }
+  }
+}
+
+// 把服务端 draft 的字段灌入本地缓存（服务端为准）。
+function hydrateLocalFromDraft(draft) {
+  const id = draft.id
+  const override = {}
+  if (draft.draftTitle) override.draftTitle = draft.draftTitle
+  if (draft.draftBody) override.draftBody = draft.draftBody
+  if (draft.coverText) override.coverText = draft.coverText
+  if (draft.privateMessageCta) override.privateMessageCta = draft.privateMessageCta
+  if (Array.isArray(draft.tags) && draft.tags.length) override.tags = draft.tags
+  if (Object.keys(override).length) draftOverrides[id] = { ...override, updatedAt: draft.updatedAt }
+  if (draft.verification) verificationState[id] = { ...safeObject(verificationState[id]), ...draft.verification }
+  if (draft.publish) publishPlan[id] = { ...safeObject(publishPlan[id]), ...draft.publish }
+  if (draft.metrics) feedbackState[id] = { ...safeObject(feedbackState[id]), ...draft.metrics }
+  if (draft.factCheck) state.factChecks[id] = draft.factCheck
+}
+
 function getDraftOverride(id) {
   return safeObject(draftOverrides[id])
 }
@@ -404,6 +548,11 @@ function updateDraftOverride(id, patch) {
     delete draftOverrides[id]
   }
   saveRecordStorage(draftOverridesStorageKey, draftOverrides)
+  const content = {}
+  ;['draftTitle', 'draftBody', 'coverText', 'privateMessageCta', 'tags'].forEach(key => {
+    if (patch[key] !== undefined) content[key] = patch[key]
+  })
+  if (Object.keys(content).length) draftServer.patch(id, content)
 }
 
 function getVerification(id) {
@@ -423,6 +572,8 @@ function updateVerification(id, key, checked) {
     updatedAt: new Date().toISOString()
   }
   saveRecordStorage(verificationStorageKey, verificationState)
+  const { cover, source, facts, risk } = getVerification(id)
+  draftServer.patch(id, { verification: { cover, source, facts, risk } })
 }
 
 function verificationPercent(items = getChosenRecommendations()) {
@@ -453,6 +604,8 @@ function updatePublishPlan(id, patch) {
     updatedAt: new Date().toISOString()
   }
   saveRecordStorage(publishPlanStorageKey, publishPlan)
+  const { channel, time, status, reminder } = getPublishPlan(id)
+  draftServer.patch(id, { publish: { channel, time, status, reminder } })
 }
 
 function getFeedback(id) {
@@ -473,6 +626,8 @@ function updateFeedback(id, patch) {
     updatedAt: new Date().toISOString()
   }
   saveRecordStorage(feedbackStorageKey, feedbackState)
+  const { views, saves, comments, dms, notes } = getFeedback(id)
+  draftServer.patch(id, { metrics: { views, saves, comments, dms, notes } })
 }
 
 function regionLabel(region) {
@@ -787,6 +942,31 @@ function getChosenRecommendations() {
   return chosen.length ? chosen : daily.slice(0, Math.min(recommendationMin, daily.length))
 }
 
+function onAuthChallenge() {
+  const bar = document.querySelector('#tokenBar')
+  if (bar) bar.hidden = false
+}
+
+function saveApiToken() {
+  const input = document.querySelector('#tokenInput')
+  const value = (input?.value || '').trim()
+  if (!value) { showToast('请先输入访问令牌'); return }
+  localStorage.setItem(API_TOKEN_KEY, value)
+  const bar = document.querySelector('#tokenBar')
+  if (bar) bar.hidden = true
+  showToast('令牌已保存，正在重新加载…')
+  loadIntelligence()
+}
+
+async function probeAuth() {
+  try {
+    const response = await fetch('/api/health', { cache: 'no-store' })
+    if (!response.ok) return
+    const health = await response.json()
+    if (health.authRequired && !getApiToken()) onAuthChallenge()
+  } catch { /* 静态模式无服务端，忽略 */ }
+}
+
 async function loadIntelligence() {
   const endpoints = ['/api/intelligence', './data/intelligence.json']
   for (const endpoint of endpoints) {
@@ -795,6 +975,10 @@ async function loadIntelligence() {
       if (!response.ok) throw new Error(`${response.status}`)
       const payload = await response.json()
       applyPayload(payload)
+      // 从服务端水合草稿状态/编辑（服务端为准），并首次迁移本地数据
+      await draftServer.hydrate()
+      await draftServer.migrateOnce()
+      render()
       return
     } catch {
       // Try the next endpoint. Static file mode will not have /api routes.
@@ -1861,6 +2045,7 @@ async function runFactCheck() {
     const payload = await response.json()
     if (payload.ok && payload.factCheck) {
       state.factChecks[item.id] = payload.factCheck
+      draftServer.patch(item.id, { factCheck: payload.factCheck })
       renderQualityPanels()
     }
   } catch {
@@ -2019,8 +2204,11 @@ function qualityPanelHtml(report) {
 function renderQualityPanels() {
   const item = getSelectedItem()
   if (!item) return
-  const html = qualityPanelHtml(assessQuality(item))
+  const report = assessQuality(item)
+  const html = qualityPanelHtml(report)
   document.querySelectorAll('[data-quality-panel]').forEach(el => { el.innerHTML = html })
+  // 把质检结果回写服务端，供 ready 闸门判断（debounce 合并）
+  draftServer.patch(item.id, { quality: { score: report.score, passed: report.passed, errors: report.errors, warns: report.warns } })
   // 首次查看某条草稿且还没核对过时，自动跑一次数字核对（debounce 合并重复 render）
   if (!state.factChecks[item.id] && String(item.draftBody || '')) scheduleFactCheck()
 }
@@ -2336,8 +2524,91 @@ function render() {
   renderSources()
   renderCompetitors()
   renderQualityPanels()
+  renderQueue()
   updateUndoButtons()
   updateRegenStyleTag()
+}
+
+// ---- 今日待处理队列视图 ----
+const QUEUE_STATUS_ORDER = ['collected', 'triage', 'to_generate', 'to_qc', 'to_cover', 'to_review', 'ready', 'published', 'retro']
+const QUEUE_STATUS_LABELS = {
+  collected: '已采集', triage: '待选题', to_generate: '待生成', to_qc: '待质检',
+  to_cover: '待封面', to_review: '待审核', ready: '可发布', published: '已发布', retro: '复盘待录入'
+}
+
+function statusLabel(status) {
+  return (draftServer.labels && draftServer.labels[status]) || QUEUE_STATUS_LABELS[status] || status
+}
+
+function renderQueue() {
+  const board = document.querySelector('#queueBoard')
+  const totalBadge = document.querySelector('#queueTotalBadge')
+  if (!board) return
+
+  const drafts = Object.values(draftServer.drafts || {})
+  if (totalBadge) totalBadge.textContent = `${drafts.length} 条`
+
+  if (!draftServer.available) {
+    board.innerHTML = '<p class="queue-empty">队列需要运行 <code>npm run serve</code> 启动本地服务后才能使用（草稿状态会持久化到 data/store.json）。</p>'
+    return
+  }
+  if (!drafts.length) {
+    board.innerHTML = '<p class="queue-empty">还没有草稿。先到「情报中心」刷新或生成内容。</p>'
+    return
+  }
+
+  const order = draftServer.statuses && draftServer.statuses.length ? draftServer.statuses : QUEUE_STATUS_ORDER
+  const grouped = order.map(status => ({ status, items: drafts.filter(d => d.status === status) }))
+    .filter(group => group.items.length)
+
+  board.innerHTML = grouped.map(group => {
+    const cards = group.items.map(draft => queueCardHtml(draft, order)).join('')
+    return `<div class="queue-col">
+      <div class="queue-col-head"><strong>${escapeHtml(statusLabel(group.status))}</strong><span>${group.items.length}</span></div>
+      <div class="queue-cards">${cards}</div>
+    </div>`
+  }).join('')
+}
+
+function queueCardHtml(draft, order) {
+  const idx = order.indexOf(draft.status)
+  const next = idx >= 0 && idx < order.length - 1 ? order[idx + 1] : null
+  const prev = idx > 0 ? order[idx - 1] : null
+  const title = escapeHtml(draft.draftTitle || draft.sourceTitle || '未命名草稿')
+  const region = escapeHtml(draft.regionLabel || draft.region || '')
+
+  const badges = []
+  if (draft.quality) {
+    badges.push(draft.quality.passed
+      ? `<span class="badge badge-ready">质检 ${draft.quality.score}</span>`
+      : '<span class="badge badge-review">质检未过</span>')
+  }
+  if (draft.factCheck && !draft.factCheck.ok) {
+    badges.push(`<span class="badge badge-review">数字 ${draft.factCheck.flagged.length} 存疑</span>`)
+  }
+  const assignee = draft.assignee ? `<span class="queue-assignee">@${escapeHtml(draft.assignee)}</span>` : ''
+
+  const actions = [
+    prev ? `<button class="btn-ghost compact" type="button" data-queue-back="${escapeHtml(draft.id)}">◀ 退回</button>` : '',
+    next ? `<button class="btn-secondary compact" type="button" data-queue-advance="${escapeHtml(draft.id)}" data-queue-to="${next}">${escapeHtml(statusLabel(next))} ▶</button>` : ''
+  ].join('')
+
+  return `<div class="queue-card" data-queue-open="${escapeHtml(draft.id)}">
+    <div class="queue-card-title">${title}</div>
+    <div class="queue-card-meta">${region}${assignee}</div>
+    <div class="queue-card-badges">${badges.join('')}</div>
+    <div class="queue-card-actions">${actions}</div>
+  </div>`
+}
+
+async function queueTransition(id, to) {
+  const result = await draftServer.transition(id, to)
+  if (result.ok) {
+    showToast(`已流转到「${statusLabel(to)}」`)
+    render()
+  } else {
+    showToast(`不能流转：${result.reason || '状态校验未通过'}`)
+  }
 }
 
 async function refreshData() {
@@ -2415,6 +2686,24 @@ document.addEventListener('click', event => {
   if (event.target.closest('[data-variants-close]')) { closeVariantsModal(); return }
   const variantButton = event.target.closest('[data-variant-index]')
   if (variantButton) { applyVariant(Number(variantButton.dataset.variantIndex)); return }
+  // 队列：前进/退回/打开
+  const advanceBtn = event.target.closest('[data-queue-advance]')
+  if (advanceBtn) { queueTransition(advanceBtn.dataset.queueAdvance, advanceBtn.dataset.queueTo); return }
+  const backBtn = event.target.closest('[data-queue-back]')
+  if (backBtn) {
+    const draft = draftServer.drafts[backBtn.dataset.queueBack]
+    const order = draftServer.statuses?.length ? draftServer.statuses : QUEUE_STATUS_ORDER
+    const idx = order.indexOf(draft?.status)
+    if (idx > 0) queueTransition(backBtn.dataset.queueBack, order[idx - 1])
+    return
+  }
+  const openCard = event.target.closest('[data-queue-open]')
+  if (openCard && !event.target.closest('button')) {
+    state.selectedId = openCard.dataset.queueOpen
+    setView('creation')
+    render()
+    return
+  }
   const pngButton = event.target.closest('[data-export-cover-png]')
   if (pngButton) exportCoverPng()
 })
@@ -2453,8 +2742,14 @@ competitorFormEl?.addEventListener('submit', event => {
   showToast('竞品笔记已保存')
 })
 
+document.querySelector('#tokenSaveButton')?.addEventListener('click', saveApiToken)
+document.querySelector('#tokenInput')?.addEventListener('keydown', event => {
+  if (event.key === 'Enter') saveApiToken()
+})
+
 document.body.dataset.activeView = state.view
 intelligenceItems = fallbackIntelligenceItems.map(normalizeItem)
 syncDefaultRecommendations()
 render()
+probeAuth()
 loadIntelligence()

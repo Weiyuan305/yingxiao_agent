@@ -1132,6 +1132,130 @@ select.input-field {
   color: var(--body-gray);
 }
 
+/* 访问令牌输入条 —— 仅用站点既有 token */
+.token-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 10px 16px;
+  background: #000000;
+  color: #ffffff;
+}
+
+.token-bar-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.token-bar .input-field {
+  flex: 1;
+  min-width: 180px;
+  max-width: 320px;
+}
+
+/* 黑底上把主按钮反相，保证可见 */
+.token-bar .btn-primary {
+  background: #ffffff;
+  color: #000000;
+}
+
+.token-bar .btn-primary:hover {
+  background: var(--hover-gray);
+}
+
+/* 今日待处理队列看板 —— 仅用站点既有 token，无新配色 */
+.queue-board {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+}
+
+.queue-col {
+  flex: 0 0 244px;
+  background: var(--hover-light);
+  border-radius: 14px;
+  padding: 12px;
+}
+
+.queue-col-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 0.9rem;
+}
+
+.queue-col-head span {
+  background: #000000;
+  color: #ffffff;
+  border-radius: 999px;
+  padding: 1px 9px;
+  font-size: 0.72rem;
+}
+
+.queue-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.queue-card {
+  background: #ffffff;
+  border: 1px solid var(--line-gray);
+  border-radius: 12px;
+  padding: 12px;
+  cursor: pointer;
+  transition: box-shadow 0.15s ease;
+}
+
+.queue-card:hover {
+  box-shadow: 0 4px 14px var(--shadow-light);
+}
+
+.queue-card-title {
+  font-weight: 600;
+  font-size: 0.92rem;
+  line-height: 1.4;
+}
+
+.queue-card-meta {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+  color: var(--muted-gray);
+  font-size: 0.75rem;
+}
+
+.queue-assignee {
+  color: var(--body-gray);
+}
+
+.queue-card-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.queue-card-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.queue-card-actions .compact {
+  padding: 5px 10px;
+  font-size: 0.78rem;
+}
+
+.queue-empty {
+  color: var(--muted-gray);
+  padding: 20px;
+  line-height: 1.6;
+}
+
 .regen-block {
   margin: 14px 0;
 }

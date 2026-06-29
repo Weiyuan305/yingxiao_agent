@@ -7,12 +7,18 @@
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
+    <div class="token-bar" id="tokenBar" hidden>
+      <span class="token-bar-label">🔒 此服务需要访问令牌</span>
+      <input class="input-field" id="tokenInput" type="password" placeholder="粘贴团队访问令牌" autocomplete="off" />
+      <button class="btn-primary compact" type="button" id="tokenSaveButton">保存并继续</button>
+    </div>
     <div class="app-shell">
       <nav class="top-nav">
         <div class="nav-inner">
           <a class="brand" href="./index.html">StudyAgent</a>
           <div class="nav-links" aria-label="主导航">
             <button class="nav-link active" type="button" data-view="intelligence">情报中心</button>
+            <button class="nav-link" type="button" data-view="queue">今日待处理</button>
             <button class="nav-link" type="button" data-view="creation">内容创作</button>
             <button class="nav-link" type="button" data-view="publish">发布管理</button>
             <button class="nav-link" type="button" data-view="sources">数据源</button>
@@ -314,6 +320,19 @@
             </article>
           </section>
         </section>
+        </section>
+
+        <section class="app-view" data-view-panel="queue">
+          <article class="card view-card">
+            <div class="panel-header">
+              <div>
+                <h2>今日待处理</h2>
+                <p>按生命周期分组 · 草稿状态持久化、换台电脑也在</p>
+              </div>
+              <span class="badge badge-ready" id="queueTotalBadge">0 条</span>
+            </div>
+            <div class="queue-board" id="queueBoard"></div>
+          </article>
         </section>
 
         <section class="app-view" data-view-panel="creation">
