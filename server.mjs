@@ -213,11 +213,13 @@ const server = http.createServer(async (request, response) => {
       }
 
       const mode = body.mode === 'title' ? 'title' : 'full'
+      const refs = sanitizeRefs(body.references)
       const baseOptions = {
         mode,
         ...(body.style ? { style: String(body.style) } : {}),
         ...(Number.isFinite(Number(body.temperature)) ? { temperature: Number(body.temperature) } : {}),
-        ...(Array.isArray(body.fix) && body.fix.length ? { fix: body.fix.map(String) } : {})
+        ...(Array.isArray(body.fix) && body.fix.length ? { fix: body.fix.map(String) } : {}),
+        ...(refs.length ? { references: refs } : {})
       }
 
       const count = Math.min(Math.max(Number(body.count) || 1, 1), 4)
@@ -269,6 +271,7 @@ const server = http.createServer(async (request, response) => {
           ...(body.style ? { style: String(body.style) } : {}),
           ...(Number.isFinite(Number(body.temperature)) ? { temperature: Number(body.temperature) } : {}),
           ...(Array.isArray(body.fix) && body.fix.length ? { fix: body.fix.map(String) } : {}),
+          ...(sanitizeRefs(body.references).length ? { references: sanitizeRefs(body.references) } : {}),
           ...(body.variant !== undefined ? { variant: body.variant } : {})
         }, partialBody => send({ type: 'delta', body: partialBody }))
         send({ type: 'done', source: result.source, draft: result.draft, factCheck: factCheckDraft(result.draft, sourceItem) })
@@ -347,6 +350,18 @@ async function serveStatic(pathname, response) {
 
 async function readJson(file) {
   return JSON.parse(await readFile(file, 'utf8'))
+}
+
+// 清洗前端传来的竞品参考（学结构不抄内容），最多 4 条，截断长度。
+function sanitizeRefs(value) {
+  if (!Array.isArray(value)) return []
+  return value
+    .map(ref => ({
+      title: String(ref?.title || '').slice(0, 60),
+      hook: String(ref?.hook || '').slice(0, 240)
+    }))
+    .filter(ref => ref.title || ref.hook)
+    .slice(0, 4)
 }
 
 // 只对带正文的草稿做数字核对（title 模式没有正文）。

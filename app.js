@@ -318,6 +318,7 @@ const sourceSummaryEl = document.querySelector('#sourceSummary')
 const competitorFormEl = document.querySelector('#competitorForm')
 const competitorTitleEl = document.querySelector('#competitorTitle')
 const competitorUrlEl = document.querySelector('#competitorUrl')
+const competitorHookEl = document.querySelector('#competitorHook')
 const competitorListEl = document.querySelector('#competitorList')
 const competitorCountEl = document.querySelector('#competitorCount')
 const toastEl = document.querySelector('#toast')
@@ -1938,13 +1939,21 @@ function buildPayloadItem(item) {
   }
 }
 
+// 取最近录入的竞品爆款笔记作为生成参考（学结构不抄内容）。
+function getReferenceNotes() {
+  return (competitorNotes || [])
+    .filter(note => note && (note.title || note.hook))
+    .slice(0, 4)
+    .map(note => ({ title: note.title || '', hook: note.hook || '' }))
+}
+
 async function requestGenerate(extra) {
   const item = getSelectedItem()
   const response = await fetch('/api/generate', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     cache: 'no-store',
-    body: JSON.stringify({ id: item.id, item: buildPayloadItem(item), ...extra })
+    body: JSON.stringify({ id: item.id, item: buildPayloadItem(item), references: getReferenceNotes(), ...extra })
   })
   if (!response.ok) {
     let detail = ''
@@ -1983,7 +1992,7 @@ async function streamGenerate(extra, onBody) {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     cache: 'no-store',
-    body: JSON.stringify({ id: item.id, item: buildPayloadItem(item), ...extra })
+    body: JSON.stringify({ id: item.id, item: buildPayloadItem(item), references: getReferenceNotes(), ...extra })
   })
   if (!response.ok || !response.body) throw new Error(`stream ${response.status}`)
   const reader = response.body.getReader()
@@ -2725,6 +2734,7 @@ competitorFormEl?.addEventListener('submit', event => {
   event.preventDefault()
   const title = competitorTitleEl.value.trim()
   const url = competitorUrlEl.value.trim()
+  const hook = competitorHookEl?.value.trim() || ''
   if (!title) {
     showToast('请先填写竞品标题')
     return
@@ -2733,13 +2743,15 @@ competitorFormEl?.addEventListener('submit', event => {
     id: `manual-${Date.now()}`,
     title,
     url,
+    hook,
     createdAt: new Date().toISOString()
   })
   saveCompetitorNotes()
   competitorTitleEl.value = ''
   competitorUrlEl.value = ''
+  if (competitorHookEl) competitorHookEl.value = ''
   renderCompetitors()
-  showToast('竞品笔记已保存')
+  showToast('竞品笔记已保存，生成时会参考')
 })
 
 document.querySelector('#tokenSaveButton')?.addEventListener('click', saveApiToken)

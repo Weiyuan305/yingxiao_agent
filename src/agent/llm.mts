@@ -85,17 +85,32 @@ export function getLlmState(options: AgentOptions = {}): LlmState {
   }
 }
 
+export interface ReferenceNote {
+  title?: string
+  hook?: string
+}
+
 export interface GenerateOptions {
   style?: string
   variant?: number | string
   temperature?: number
   fix?: string[]
+  references?: ReferenceNote[]
 }
 
 function fixDirective(fix?: string[]): string {
   const list = (fix || []).map(text => String(text).trim()).filter(Boolean).slice(0, 8)
   if (!list.length) return ''
   return `这是对上一版草稿的定向修正。请保持事实不变，但必须修好以下问题：${list.join('；')}。`
+}
+
+// 把用户录入的真实爆款竞品笔记作为额外风格参考（学结构和钩子，不抄内容、不搬数据）。
+function referenceBlock(references?: ReferenceNote[]): Array<{ title: string; hook: string }> | null {
+  const list = (references || [])
+    .map(ref => ({ title: String(ref?.title || '').trim(), hook: String(ref?.hook || '').trim() }))
+    .filter(ref => ref.title || ref.hook)
+    .slice(0, 4)
+  return list.length ? list : null
 }
 
 export const XHS_STYLE_DIRECTIVES: Record<string, string> = {
@@ -120,6 +135,7 @@ function buildFullPrompt(item: SourceItem, options: GenerateOptions): string {
   const directive = styleDirective(options.style)
   const variant = variantHint(options.variant)
   const fix = fixDirective(options.fix)
+  const refs = referenceBlock(options.references)
   return JSON.stringify({
     task: '基于下面这条真实来源，写一篇可以直接发小红书的留学图文笔记。只返回 JSON，不要任何解释或代码块标记。',
     persona: XHS_PERSONA,
@@ -130,6 +146,7 @@ function buildFullPrompt(item: SourceItem, options: GenerateOptions): string {
     ...(directive ? { style_directive: directive } : {}),
     ...(variant ? { variant_hint: variant } : {}),
     ...(fix ? { fix_directives: fix } : {}),
+    ...(refs ? { competitor_reference_examples: refs, competitor_reference_note: '这些是本账号收藏的真实爆款笔记，学它们的标题钩子、分点结构和语气，但绝不照搬文案、不套用它们的数据或结论，事实仍以本条来源为准。' } : {}),
     style_reference_examples: XHS_FEWSHOT,
     required_schema: {
       draftTitle: '小红书标题, 不超过20字, 用 title_formulas 里的钩子, 可带1~2个 emoji',
@@ -291,7 +308,8 @@ export async function generateOne(item: SourceItem, options: GenerateOneOptions 
     ...(options.style ? { style: options.style } : {}),
     variant: options.variant ?? seed,
     ...(options.temperature !== undefined ? { temperature: options.temperature } : {}),
-    ...(options.fix && options.fix.length ? { fix: options.fix } : {})
+    ...(options.fix && options.fix.length ? { fix: options.fix } : {}),
+    ...(options.references && options.references.length ? { references: options.references } : {})
   }
 
   if (mode === 'title') {
@@ -470,7 +488,8 @@ export async function streamOne(
     ...(options.style ? { style: options.style } : {}),
     variant: options.variant ?? Date.now(),
     ...(options.temperature !== undefined ? { temperature: options.temperature } : {}),
-    ...(options.fix && options.fix.length ? { fix: options.fix } : {})
+    ...(options.fix && options.fix.length ? { fix: options.fix } : {}),
+    ...(options.references && options.references.length ? { references: options.references } : {})
   }
   const temperature = genOptions.temperature ?? resolveTemperature()
 
