@@ -2210,11 +2210,29 @@ function qualityPanelHtml(report) {
   return `<div class="quality-head qc-${tone}"><strong>质检 ${escapeHtml(badge)}</strong>${fixBtn}</div><ul class="quality-list">${items}</ul>`
 }
 
+// 来源引用式核验：逐个数字展开显示"来源原文片段"+来源链接，未找到的标黄
+function factDetailHtml(item) {
+  const fact = state.factChecks[item.id]
+  if (!fact || !Array.isArray(fact.details) || !fact.details.length) return ''
+  const rows = fact.details.map(detail => {
+    const icon = detail.found ? '✓' : '⚠'
+    const cls = detail.found ? 'ok' : 'warn'
+    const evidence = detail.found
+      ? `来源：${escapeHtml(detail.snippet || '已在原文找到')}`
+      : '来源原文中未找到，请人工核对或删改'
+    return `<li class="qc-${cls}"><span class="qc-icon">${icon}</span><span class="qc-label">${escapeHtml(detail.value)}</span><em>${evidence}</em></li>`
+  }).join('')
+  const link = item.sourceUrl
+    ? `<a class="fact-source-link" href="${escapeHtml(item.sourceUrl)}" target="_blank" rel="noopener noreferrer">查看来源原文 ↗</a>`
+    : ''
+  return `<details class="fact-detail"><summary>数字逐项核对（${fact.details.length}）</summary><ul class="quality-list">${rows}</ul>${link}</details>`
+}
+
 function renderQualityPanels() {
   const item = getSelectedItem()
   if (!item) return
   const report = assessQuality(item)
-  const html = qualityPanelHtml(report)
+  const html = qualityPanelHtml(report) + factDetailHtml(item)
   document.querySelectorAll('[data-quality-panel]').forEach(el => { el.innerHTML = html })
   // 把质检结果回写服务端，供 ready 闸门判断（debounce 合并）
   draftServer.patch(item.id, { quality: { score: report.score, passed: report.passed, errors: report.errors, warns: report.warns } })

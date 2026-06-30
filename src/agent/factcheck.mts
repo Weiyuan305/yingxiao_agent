@@ -1,9 +1,17 @@
 import type { SourceItem } from './types.mjs'
 
+export interface FactDetail {
+  value: string
+  kind: string
+  found: boolean
+  snippet: string
+}
+
 export interface FactCheckResult {
   ok: boolean
   checked: number
   flagged: Array<{ value: string; kind: string }>
+  details: FactDetail[]
 }
 
 type FactSource = Pick<SourceItem, 'rawText' | 'summary' | 'title'>
@@ -32,10 +40,31 @@ function digitsOnly(value: string): string {
  * 检查正文里的高风险数字是否能在来源原文中找到。
  * 找不到的标记出来，提示人工核对——是“辅助提醒”，不是“判定为错”。
  */
+// 在来源原文里定位某个数字，截取一段可读的上下文作为"引用证据"。
+function findSnippet(normSource: string, value: string): string {
+  const lower = normSource.toLowerCase()
+  let index = lower.indexOf(value.toLowerCase())
+  let hay = normSource
+  if (index < 0) {
+    const stripped = normSource.replace(/[,\s]/g, '')
+    const core = digitsOnly(value)
+    if (core.length >= 2) {
+      const ci = stripped.indexOf(core)
+      if (ci >= 0) { hay = stripped; index = ci }
+    }
+  }
+  if (index < 0) return ''
+  const start = Math.max(0, index - 24)
+  const end = Math.min(hay.length, index + value.length + 24)
+  const slice = hay.slice(start, end).replace(/\s+/g, ' ').trim()
+  return `${start > 0 ? '…' : ''}${slice}${end < hay.length ? '…' : ''}`
+}
+
 export function factCheck(body: string, source: FactSource): FactCheckResult {
   const sourceRaw = `${source.title || ''}\n${source.summary || ''}\n${source.rawText || ''}`
+  const normSource = toHalfWidthDigits(sourceRaw)
   const sourceDigits = digitsOnly(sourceRaw)
-  const sourceLower = toHalfWidthDigits(sourceRaw).toLowerCase()
+  const sourceLower = normSource.toLowerCase()
 
   const seen = new Set<string>()
   const tokens: Array<{ value: string; kind: string }> = []
@@ -49,16 +78,18 @@ export function factCheck(body: string, source: FactSource): FactCheckResult {
     }
   }
 
+  const details: FactDetail[] = []
   const flagged: Array<{ value: string; kind: string }> = []
   for (const token of tokens) {
     const core = digitsOnly(token.value)
     const found = core.length >= 2
       ? sourceDigits.includes(core)
       : sourceLower.includes(token.value.toLowerCase())
-    if (!found) flagged.push(token)
+    details.push({ value: token.value, kind: token.kind, found, snippet: found ? findSnippet(normSource, token.value) : '' })
+    if (!found) flagged.push({ value: token.value, kind: token.kind })
   }
 
-  return { ok: flagged.length === 0, checked: tokens.length, flagged }
+  return { ok: flagged.length === 0, checked: tokens.length, flagged, details }
 }
 
 export const FACT_KIND_LABELS: Record<string, string> = {

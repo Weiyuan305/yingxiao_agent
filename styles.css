@@ -1132,6 +1132,40 @@ select.input-field {
   color: var(--body-gray);
 }
 
+/* 来源引用式核验：逐项数字 + 来源片段 */
+.fact-detail {
+  margin-top: 10px;
+  border: 1px solid var(--line-gray);
+  border-radius: 10px;
+  padding: 8px 12px;
+  background: var(--hover-light);
+}
+
+.fact-detail > summary {
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--body-gray);
+}
+
+.fact-detail .quality-list {
+  margin-top: 8px;
+}
+
+.fact-detail .quality-list em {
+  color: var(--body-gray);
+  font-style: normal;
+}
+
+.fact-source-link {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #000000;
+  text-decoration: underline;
+}
+
 /* 访问令牌输入条 —— 仅用站点既有 token */
 .token-bar {
   display: flex;
