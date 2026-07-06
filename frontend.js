@@ -2407,7 +2407,7 @@ async function copyCleanDraft() {
   }
 }
 
-// 信息图封面导出已拆分到 cover.js（在 app.js 之前加载）
+// 信息图封面导出已拆分到 cover.js（在 frontend.js 之前加载）
 
 function render() {
   updateIntegrationStatus()
@@ -2429,7 +2429,7 @@ function render() {
   updateRegenStyleTag()
 }
 
-// 今日待处理队列视图已拆分到 queue.js（在 app.js 之前加载）
+// 今日待处理队列视图已拆分到 queue.js（在 frontend.js 之前加载）
 
 async function refreshData() {
   showToast('正在采集真实数据...')

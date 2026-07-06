@@ -1,7 +1,7 @@
 // 信息图封面一键导出 PNG（小红书 3:4，1080×1440）
-// 从 app.js 拆出的独立模块（classic script，共享全局作用域；在 app.js 之前加载）。
+// 从 frontend.js 拆出的独立模块（classic script，共享全局作用域；在 frontend.js 之前加载）。
 // 运行时依赖的 ensureCompliant / getSelectedItem / state / coverStyleLabels / showToast 均为全局，
-// 仅在 exportCoverPng 被调用时（运行期）使用，此时它们已在 app.js 中定义。
+// 仅在 exportCoverPng 被调用时（运行期）使用，此时它们已在 frontend.js 中定义。
 const coverRegionPalettes = {
   HK: { bg: ['#0f172a', '#7f1d1d'], accent: '#f59e0b', label: '香港' },
   UK: { bg: ['#0b1437', '#1e3a8a'], accent: '#38bdf8', label: '英国' },

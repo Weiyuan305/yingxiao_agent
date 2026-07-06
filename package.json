@@ -10,7 +10,7 @@
     "agent": "npm run build && node scripts/agent.mjs",
     "refresh": "npm run build && node scripts/run-agent.mjs",
     "test": "npm run build && node scripts/marketing.test.mjs && node tests/agent-pipeline.test.mjs && node tests/factcheck.test.mjs && node tests/store.test.mjs && node tests/security.test.mjs",
-    "check": "npm run build && node --check app.js && node --check server.mjs && node --check scripts/env.mjs && node --check scripts/collect.mjs && node --check scripts/agent.mjs && node --check scripts/store.mjs && node --check scripts/security.mjs && node --check scripts/marketing.mjs && node --check scripts/run-agent.mjs && npm run test"
+    "check": "npm run build && node --check frontend.js && node --check server.mjs && node --check scripts/env.mjs && node --check scripts/collect.mjs && node --check scripts/agent.mjs && node --check scripts/store.mjs && node --check scripts/security.mjs && node --check scripts/marketing.mjs && node --check scripts/run-agent.mjs && node --check 'api/[...path].js' && npm run test"
   },
   "engines": {
     "node": ">=20"

@@ -1,5 +1,5 @@
 // 今日待处理队列视图
-// 从 app.js 拆出的独立模块（classic script，共享全局作用域；在 app.js 之前加载）。
+// 从 frontend.js 拆出的独立模块（classic script，共享全局作用域；在 frontend.js 之前加载）。
 // 运行时依赖 draftServer / escapeHtml / showToast / render 均为全局，仅在被调用时使用。
 const QUEUE_STATUS_ORDER = ['collected', 'triage', 'to_generate', 'to_qc', 'to_cover', 'to_review', 'ready', 'published', 'retro']
 const QUEUE_STATUS_LABELS = {

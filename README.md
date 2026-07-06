@@ -73,7 +73,7 @@ X_BEARER_TOKEN=
 - 营销评分器：`src/agent/marketing.mts`，按政策影响、热点热度、紧急程度、收藏价值和专业可信度评分。
 - 兼容入口：`scripts/agent.mjs`、`scripts/marketing.mjs` 保留原 import 路径，但实际调用 `dist/agent/` 的 TypeScript 编译产物。
 - 本地 API 服务：`server.mjs`。
-- 前端工作台：`index.html`、`styles.css`、`app.js`，从 `/api/intelligence` 或 `data/intelligence.json` 读取真实 JSON。
+- 前端工作台：`index.html`、`styles.css`、`frontend.js`，从 `/api/intelligence` 或 `data/intelligence.json` 读取真实 JSON。
 - 每日推荐：自动给出 3-5 篇候选，用户可以手动选择今日创作内容。
 - 备选题库：低优先级内容保留做合集、补位或后续跟进。
 - 发布管理：生成今日内容日历和人工发布提醒。
@@ -108,7 +108,7 @@ X_BEARER_TOKEN=
 .
 ├── index.html              # 前端页面
 ├── styles.css              # UI 样式
-├── app.js                  # 前端交互和本地状态
+├── frontend.js             # 前端交互和本地状态
 ├── server.mjs              # 本地 API 服务
 ├── src/agent/              # TypeScript Agent 核心
 ├── scripts/                # 采集脚本和兼容入口

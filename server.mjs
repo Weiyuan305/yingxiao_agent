@@ -306,6 +306,8 @@ export async function handleRequest(request, response) {
   }
 }
 
+export default handleRequest
+
 if (process.argv[1] && path.resolve(process.argv[1]) === currentFile) {
   const server = http.createServer(handleRequest)
   server.listen(port, host, () => {
