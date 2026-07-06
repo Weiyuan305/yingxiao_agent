@@ -1,9 +1,9 @@
 import { createReadStream } from 'node:fs'
-import { readFile, stat } from 'node:fs/promises'
+import { readFile, stat, writeFile } from 'node:fs/promises'
 import http from 'node:http'
+import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { writeFile } from 'node:fs/promises'
 import { collectAll } from './scripts/collect.mjs'
 import { buildIntelligence, generateOne, streamOne, factCheck } from './scripts/agent.mjs'
 import { loadLocalEnv } from './scripts/env.mjs'
@@ -12,7 +12,10 @@ import { createRateLimiter, safeEqual } from './scripts/security.mjs'
 
 await loadLocalEnv()
 
-const rootDir = path.dirname(fileURLToPath(import.meta.url))
+const currentFile = fileURLToPath(import.meta.url)
+const rootDir = path.dirname(currentFile)
+const isVercelRuntime = process.env.VERCEL === '1'
+const runtimeDataDir = isVercelRuntime ? path.join(tmpdir(), 'study-agent') : path.join(rootDir, 'data')
 const port = Number(process.env.PORT || 4173)
 const host = process.env.HOST || '127.0.0.1'
 const refreshIntervalHours = Number(process.env.REFRESH_INTERVAL_HOURS || 24)
@@ -26,7 +29,7 @@ if (!authRequired) {
 }
 const rateLimitPerMin = Number(process.env.RATE_LIMIT_PER_MIN || 20)
 const generateLimiter = createRateLimiter({ max: Math.max(1, rateLimitPerMin), windowMs: 60_000 })
-const usagePath = path.join(rootDir, 'data', 'usage.json')
+const usagePath = path.join(runtimeDataDir, 'usage.json')
 const usage = await loadUsage()
 
 function clientIp(request) {
@@ -62,7 +65,7 @@ function recordUsage(endpoint) {
   }, 1000)
 }
 
-const repo = createRepository(path.join(rootDir, 'data', 'store.json'))
+const repo = createRepository(path.join(runtimeDataDir, 'store.json'))
 // 启动时用现有 intelligence.json 建档（已存在的只补空、不覆盖）。
 await seedDraftsFromIntelligence().catch(error => console.error(`seed drafts failed: ${error.message}`))
 
@@ -89,7 +92,7 @@ const mimeTypes = {
   '.txt': 'text/plain;charset=utf-8'
 }
 
-const server = http.createServer(async (request, response) => {
+export async function handleRequest(request, response) {
   try {
     const url = new URL(request.url, `http://${request.headers.host}`)
 
@@ -301,28 +304,31 @@ const server = http.createServer(async (request, response) => {
     response.writeHead(500, { 'content-type': 'application/json;charset=utf-8' })
     response.end(JSON.stringify({ ok: false, message: error.message }))
   }
-})
+}
 
-server.listen(port, host, () => {
-  console.log(`StudyAgent server running at http://localhost:${port}/`)
-  if (refreshIntervalHours > 0) {
-    console.log(`Auto refresh scheduled every ${refreshIntervalHours} hour(s).`)
-  }
-})
-
-if (refreshIntervalHours > 0) {
-  setInterval(async () => {
-    if (collecting) return
-    collecting = true
-    try {
-      const { intelligence } = await runRefresh()
-      console.log(`Auto refresh complete: ${intelligence.meta.itemCount} cards at ${intelligence.meta.generatedAt}`)
-    } catch (error) {
-      console.error(`Auto refresh failed: ${error.message}`)
-    } finally {
-      collecting = false
+if (process.argv[1] && path.resolve(process.argv[1]) === currentFile) {
+  const server = http.createServer(handleRequest)
+  server.listen(port, host, () => {
+    console.log(`StudyAgent server running at http://localhost:${port}/`)
+    if (refreshIntervalHours > 0) {
+      console.log(`Auto refresh scheduled every ${refreshIntervalHours} hour(s).`)
     }
-  }, refreshIntervalHours * 60 * 60 * 1000)
+  })
+
+  if (refreshIntervalHours > 0) {
+    setInterval(async () => {
+      if (collecting) return
+      collecting = true
+      try {
+        const { intelligence } = await runRefresh()
+        console.log(`Auto refresh complete: ${intelligence.meta.itemCount} cards at ${intelligence.meta.generatedAt}`)
+      } catch (error) {
+        console.error(`Auto refresh failed: ${error.message}`)
+      } finally {
+        collecting = false
+      }
+    }, refreshIntervalHours * 60 * 60 * 1000)
+  }
 }
 
 async function serveStatic(pathname, response) {

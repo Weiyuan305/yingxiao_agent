@@ -1,0 +1,11 @@
+.env
+.env.*
+!.env.example
+node_modules
+.git
+.DS_Store
+data/raw
+data/store.json
+data/store.json.tmp
+data/usage.json
+*.log

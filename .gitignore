@@ -18,3 +18,5 @@ data/usage.json
 dist/
 build/
 coverage/
+.vercel
+.env*
