@@ -118,9 +118,11 @@ export interface LlmState {
 export interface AgentOptions {
   input?: string
   output?: string
+  memoryPath?: string
   apiKey?: string
   model?: string
   disableLlm?: boolean
+  disableMemory?: boolean
   limit?: number
   minDisplayScore?: number
   perSourceLimit?: number
@@ -131,13 +133,71 @@ export interface AgentOptions {
 }
 
 export interface AgentStepTrace {
-  id: 'ingest' | 'score' | 'recommend' | 'generate' | 'package'
+  id: 'observe' | 'ingest' | 'score' | 'plan' | 'recommend' | 'generate' | 'review' | 'remember' | 'package'
   label: string
   status: 'ok' | 'warning' | 'failed'
   startedAt: string
   finishedAt: string
   itemCount: number
   message: string
+}
+
+export interface AgentGoal {
+  id: string
+  label: string
+  objective: string
+  successCriteria: string[]
+  constraints: string[]
+}
+
+export interface AgentObservation {
+  id: string
+  label: string
+  value: string
+  severity: 'info' | 'warning' | 'critical'
+}
+
+export interface AgentPlanItem {
+  id: string
+  label: string
+  tool: string
+  reason: string
+  status: 'pending' | 'running' | 'completed' | 'skipped' | 'failed'
+}
+
+export interface AgentToolTrace {
+  id: string
+  tool: string
+  label: string
+  status: 'ok' | 'warning' | 'failed'
+  startedAt: string
+  finishedAt: string
+  input: string
+  output: string
+}
+
+export interface AgentDecision {
+  id: string
+  label: string
+  rationale: string
+  evidence: string[]
+  action: string
+}
+
+export interface AgentMemorySnapshot {
+  loaded: boolean
+  updatedAt?: string
+  recentTopicIds: string[]
+  recentTopicSignatures: string[]
+  learnings: string[]
+  warning?: string
+}
+
+export interface AgentNextAction {
+  label: string
+  owner: 'agent' | 'operator' | 'team'
+  priority: 'P0' | 'P1' | 'P2'
+  reason: string
 }
 
 export interface FrontendItem {
@@ -217,7 +277,14 @@ export interface IntelligencePayload {
       name: string
       version: string
       strategy: string
+      goal?: AgentGoal
+      observations?: AgentObservation[]
+      plan?: AgentPlanItem[]
       steps: AgentStepTrace[]
+      tools?: AgentToolTrace[]
+      decisions?: AgentDecision[]
+      memory?: AgentMemorySnapshot
+      nextActions?: AgentNextAction[]
     }
     llm: {
       enabled: boolean
